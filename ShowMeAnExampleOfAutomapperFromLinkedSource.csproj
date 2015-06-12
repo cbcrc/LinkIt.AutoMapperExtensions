@@ -71,8 +71,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoMapReferenceTests.cs" />
+    <Compile Include="DummyClasses.cs" />
+    <Compile Include="DynamicExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SourceDataTests.cs" />
+    <Compile Include="OldAutoMapReferenceTests.cs" />
+    <Compile Include="MappingExpressionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

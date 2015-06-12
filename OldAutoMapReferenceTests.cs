@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
@@ -6,9 +8,7 @@ using NUnit.Framework;
 namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
     [UseReporter(typeof(DiffReporter))]
     [TestFixture]
-    public class AutoMapReferenceTests {
-
-
+    public class OldAutoMapReferenceTests {
         [Test]
         public void Map_OneStep()
         {
@@ -83,54 +83,6 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
 
             Assert.That(actual.X, Is.EqualTo("TheX"));
             Assert.That(actual.Y, Is.EqualTo("TheY"));
-        }
-    }
-
-    public interface ILinkedSource<T>
-    {
-        T Model { get; }
-    }
-
-    public class LinkedSource:ILinkedSource<AModel>
-    {
-        public AModel Model { get; set; }
-        public AReference Reference { get; set; }
-    }
-
-    public class AModel {
-        public string X { get; set; }
-        public string Y { get; set; }
-        public int Reference { get; set; }
-    }
-
-    public class AReference {
-        public string A { get; set; }
-        public string B { get; set; }
-    }
-
-    public class ADto {
-        public string X { get; set; }
-        public string Y { get; set; }
-        public AReferenceDto ReferenceDto { get; set; }
-    }
-
-    public class AReferenceDto {
-        public string A { get; set; }
-        public string B { get; set; }
-    }
-
-    public static class MappingExpressionExtensions {
-        //Useless since it defeat the purpose of AssertConfigurationIsValid
-        //However, it is a good inspiration for dynamic mapping expression based on Model
-        public static IMappingExpression<TSource, TDestination> IgnoreAllNonExisting<TSource, TDestination>(this IMappingExpression<TSource, TDestination> expression) {
-            var sourceType = typeof(TSource);
-            var destinationType = typeof(TDestination);
-            var existingMaps = Mapper.GetAllTypeMaps().First(x => x.SourceType.Equals(sourceType)
-                && x.DestinationType.Equals(destinationType));
-            foreach (var property in existingMaps.GetUnmappedPropertyNames()) {
-                expression.ForMember(property, opt => opt.Ignore());
-            }
-            return expression;
         }
     }
 }
