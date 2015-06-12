@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
@@ -11,8 +15,14 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
 
         [Test]
         public void Map_DynamicMappingExpression_ShouldGenerateValidMapping() {
-            Mapper.CreateMap<LinkedSource, ADto>().MapModel<LinkedSource, AModel, ADto>();
-            //            Mapper.AssertConfigurationIsValid();
+            Mapper
+                .CreateMap<LinkedSource, ADto>()
+                .ForMember(x => x.Reference, o => o.Ignore())
+                .MapModel<LinkedSource, AModel, ADto>()
+                .ForMember(dto=>dto.X, o=>o.MapFrom(linkedSource=>linkedSource.Model.X));
+
+
+            Mapper.AssertConfigurationIsValid();
 
             var source = CreateSource();
 
@@ -35,15 +45,6 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
                     B="TheB"
                 }
             };
-        }
-
-        private static void AssertDestination(ADto actual) {
-            Assert.That(actual.ReferenceDto, Is.Not.Null);
-            Assert.That(actual.ReferenceDto.A, Is.EqualTo("TheA"));
-            Assert.That(actual.ReferenceDto.B, Is.EqualTo("TheB"));
-
-            Assert.That(actual.X, Is.EqualTo("TheX"));
-            Assert.That(actual.Y, Is.EqualTo("TheY"));
         }
     }
 }

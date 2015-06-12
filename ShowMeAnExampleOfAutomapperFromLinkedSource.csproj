@@ -71,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoMapReferencePerformanceTests.cs" />
     <Compile Include="AutoMapReferenceTests.cs" />
     <Compile Include="DummyClasses.cs" />
     <Compile Include="DynamicExtensions.cs" />

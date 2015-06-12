@@ -28,7 +28,7 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
     public class ADto {
         public string X { get; set; }
         public string Y { get; set; }
-        public AReferenceDto ReferenceDto { get; set; }
+        public AReferenceDto Reference { get; set; }
     }
 
     public class AReferenceDto {

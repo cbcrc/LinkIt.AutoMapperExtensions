@@ -21,18 +21,24 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
         public static IMappingExpression<TLinkedSource, TDestination> MapModel<TLinkedSource, TModel, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression) where TLinkedSource: ILinkedSource<TModel>
         {
             var modelType = typeof(TModel);
-            var destinationType = typeof(TDestination);
-
             var modelPropertyNames = modelType.GetProperties()
                 .Select(property => property.Name)
                 .ToList();
 
+            var linkedSourceType = typeof(TLinkedSource);
+            var referencePropertyNames = linkedSourceType.GetProperties()
+                .Select(property => property.Name)
+                .Where(propertyName => propertyName!="Model")
+                .ToList();
+
+            var destinationType = typeof(TDestination);
             var destinationPropertyNames = destinationType.GetProperties()
                 .Select(property => property.Name)
                 .ToList();
 
             var mappedBySameNameConventionPropertyNames = modelPropertyNames
                 .Intersect(destinationPropertyNames)
+                .Except(referencePropertyNames)
                 .ToList();
 
             foreach (var propertyName in mappedBySameNameConventionPropertyNames)
