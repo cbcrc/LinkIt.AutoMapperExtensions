@@ -17,10 +17,8 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
         public void Map_DynamicMappingExpression_ShouldGenerateValidMapping() {
             Mapper
                 .CreateMap<LinkedSource, ADto>()
-                .ForMember(x => x.Reference, o => o.Ignore())
-                .MapModel<LinkedSource, AModel, ADto>()
-                .ForMember(dto=>dto.X, o=>o.MapFrom(linkedSource=>linkedSource.Model.X));
-
+                .MapModel<LinkedSource, AModel, ADto>();
+            Mapper.CreateMap<AReference, AReferenceDto>();
 
             Mapper.AssertConfigurationIsValid();
 
