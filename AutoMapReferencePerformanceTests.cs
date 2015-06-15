@@ -18,8 +18,8 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
             Mapper
                 .CreateMap<LinkedSource, ADto>()
                 .ForMember(dto => dto.X, o => o.MapFrom(linkedSource => linkedSource.Model.X))
-                .ForMember(dto => dto.Y, o => o.MapFrom(linkedSource => linkedSource.Model.Y))
-                .ForMember(x => x.Reference, o => o.Ignore());
+                .ForMember(dto => dto.Y, o => o.MapFrom(linkedSource => linkedSource.Model.Y));
+            Mapper.CreateMap<AReference, AReferenceDto>();
 
             Mapper.AssertConfigurationIsValid();
 
@@ -29,7 +29,8 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
 
         private static void Benchmark(LinkedSource source)
         {
-            Mapper.Map<ADto>(source);
+            var actual = Mapper.Map<ADto>(source);
+            AssertDestination(actual);
 
             var durations = new List<long>();
             for (int times = 0; times < 1000; times++)
@@ -37,7 +38,7 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
                 var watch = Stopwatch.StartNew();
                 for (int i = 0; i < 1000; i++)
                 {
-                    var actual = Mapper.Map<ADto>(source);
+                    actual = Mapper.Map<ADto>(source);
                 }
                 watch.Stop();
                 durations.Add(watch.ElapsedMilliseconds);
@@ -50,14 +51,12 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
         public void PerformanceImpact_Auto() {
             Mapper
                 .CreateMap<LinkedSource, ADto>()
-                .MapModel<LinkedSource, AModel, ADto>()
-                .ForMember(x => x.Reference, o => o.Ignore());
+                .MapModel<LinkedSource, AModel, ADto>();
+            Mapper.CreateMap<AReference, AReferenceDto>();
 
             Mapper.AssertConfigurationIsValid();
 
             var source = CreateSource();
-            Mapper.Map<ADto>(source);
-
             Benchmark(source);
         }
 
