@@ -43,11 +43,6 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
 
             foreach (var propertyName in mappedBySameNameConventionPropertyNames)
             {
-                //var arg = Expression.Constant(null, typeof(TLinkedSource));
-                //var body = Expression.Convert(Expression.PropertyOrField(arg, propertyName),
-                //    typeof(object));
-                //var lambda = Expression.Lambda<Func<TLinkedSource, object>>(body);
-
                 var lambda = CreateExpression<TLinkedSource>("Model."+propertyName);
 
                 expression.ForMember(propertyName, opt => opt.MapFrom(lambda));
@@ -62,18 +57,8 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
             foreach (var member in propertyName.Split('.')) {
                 body = Expression.PropertyOrField(body, member);
             }
+
             return Expression.Lambda<Func<T, object>>(body, param);
         }
-
-
-        static LambdaExpression CreateExpressionAsIs(Type type, string propertyName) {
-            var param = Expression.Parameter(type, "x");
-            Expression body = param;
-            foreach (var member in propertyName.Split('.')) {
-                body = Expression.PropertyOrField(body, member);
-            }
-            return Expression.Lambda(body, param);
-        }
-
     }
 }

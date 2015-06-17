@@ -1,8 +1,0 @@
-﻿{
-  "x": "TheX",
-  "y": "TheY",
-  "reference": {
-    "a": "TheA",
-    "b": "TheB"
-  }
-}
