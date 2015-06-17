@@ -1,51 +1,49 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Reflection;
 using AutoMapper;
 
 namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
     public static class MappingExpressionExtensions {
-        //Useless since it defeat the purpose of AssertConfigurationIsValid
-        //However, it is a good inspiration for dynamic mapping expression based on Model
-        public static IMappingExpression<TSource, TDestination> IgnoreAllNonExisting<TSource, TDestination>(this IMappingExpression<TSource, TDestination> expression) {
-            var sourceType = typeof(TSource);
-            var destinationType = typeof(TDestination);
-            var existingMaps = Mapper.GetAllTypeMaps().First(x => x.SourceType.Equals(sourceType)
-                && x.DestinationType.Equals(destinationType));
-            foreach (var property in existingMaps.GetUnmappedPropertyNames()) {
-                expression.ForMember(property, opt => opt.Ignore());
-            }
-            return expression;
-        }
-
-        public static IMappingExpression<TLinkedSource, TDestination> MapModel<TLinkedSource, TModel, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression) where TLinkedSource: ILinkedSource<TModel>
+        public static IMappingExpression<TLinkedSource, TDestination> MapModel<TLinkedSource, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression)
         {
-            var modelType = typeof(TModel);
-            var modelProperties = modelType.GetProperties();
+            EnsureLinkedSourceHasModelProperty<TLinkedSource>();
+            EnsureLinkedSourceIsNonEnumerableClass<TLinkedSource>();
 
-            var linkedSourceType = typeof(TLinkedSource);
-            var referenceProperties = linkedSourceType.GetProperties()
-                .Where(property => property.Name!="Model")
-                .ToList();
 
-            var destinationType = typeof(TDestination);
-            var destinationProperties = destinationType.GetProperties();
-
-            var propertyNameComparer = new PropertyNameComparer();
-            var mappedBySameNameConventionProperties = modelProperties
-                .Intersect(destinationProperties, propertyNameComparer)
-                .Except(referenceProperties, propertyNameComparer)
-                .ToList();
+            var mappedBySameNameConventionProperties = GetMappedBySameNameConventionProperties<TLinkedSource, TDestination>();
 
             foreach (var property in mappedBySameNameConventionProperties) {
                 var method = typeof(MappingExpressionExtensions).GetMethod("BindMember");
-                var genericMethod = method.MakeGenericMethod(linkedSourceType, destinationType, property.PropertyType);
+                var genericMethod = method.MakeGenericMethod(typeof(TLinkedSource), typeof(TDestination), property.PropertyType);
                 genericMethod.Invoke(null, new object[] { "Model." + property.Name, property.Name, expression });
             }
 
             return expression;
+        }
+
+        private static List<PropertyInfo> GetMappedBySameNameConventionProperties<TLinkedSource, TDestination>() {
+            
+            var linkedSourceType = typeof(TLinkedSource);
+            var modelType = linkedSourceType.GetProperty("Model").PropertyType;
+            var modelProperties = modelType.GetProperties();
+
+            var referenceProperties = linkedSourceType.GetProperties()
+                .Where(property => property.Name != "Model")
+                .ToList();
+
+            var destinationType = typeof (TDestination);
+            var destinationProperties = destinationType.GetProperties();
+
+            var propertyNameComparer = new PropertyNameComparer();
+            return modelProperties
+                .Intersect(destinationProperties, propertyNameComparer)
+                .Except(referenceProperties, propertyNameComparer)
+                .ToList();
         }
 
         public static void BindMember<TLinkedSource, TDestination, TReference>(string sourcePropertyName, string destinationPropertyName, IMappingExpression<TLinkedSource, TDestination> expression) {
@@ -60,9 +58,28 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
                 body = Expression.PropertyOrField(body, member);
             }
 
-//            body = Expression.Convert(body, typeof (TReference));
-
             return Expression.Lambda<Func<T, TReference>>(body, param);
+        }
+
+        private static void EnsureLinkedSourceHasModelProperty<TLinkedSource>() {
+            var linkedSourceType = typeof(TLinkedSource);
+            if (linkedSourceType.GetProperty("Model") == null) {
+                throw new ArgumentException(
+                    "TLinkedSource must have a property named Model, otherwise it cannot be used as a linked source.",
+                    "TLinkedSource"
+                );
+            }
+        }
+
+        private static void EnsureLinkedSourceIsNonEnumerableClass<TLinkedSource>() {
+            var linkedSourceType = typeof(TLinkedSource);
+            var modelType = linkedSourceType.GetProperty("Model").PropertyType;
+            if (modelType.IsClass == false && typeof(IEnumerable).IsAssignableFrom(modelType) == false) {
+                throw new ArgumentException(
+                    "TLinkedSource must be a class, otherwise it cannot be used as a linked source.",
+                    "TLinkedSource"
+                    );
+            }
         }
     }
 

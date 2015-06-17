@@ -14,7 +14,7 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
         {
             Mapper
                 .CreateMap<NestedLinkedSource, MyComplexDto>()
-                .MapModel<NestedLinkedSource, MyComplexModel, MyComplexDto>();
+                .MapModel();
             Mapper.CreateMap<MyPoint, MyPointDto>();
             Mapper.CreateMap<ListOfNestedLinkedSource, ListOfMyComplexDto>();
         }
@@ -108,7 +108,7 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
             };
         }
 
-        public class NestedLinkedSource:ILinkedSource<MyComplexModel>
+        public class NestedLinkedSource
         {
             public MyComplexModel Model { get; set; }
             public NestedLinkedSource Child { get; set; }
