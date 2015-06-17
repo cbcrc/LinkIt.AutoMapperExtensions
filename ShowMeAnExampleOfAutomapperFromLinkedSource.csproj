@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoMapReferencePerformanceTests.cs" />
+    <Compile Include="AutoMapReference_CustomMappingTests.cs" />
     <Compile Include="AutoMapReference_PreconditionsTests.cs" />
     <Compile Include="AutoMapReference_ComplexTypeAndNestingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
