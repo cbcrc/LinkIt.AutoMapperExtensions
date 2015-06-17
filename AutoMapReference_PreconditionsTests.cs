@@ -3,7 +3,6 @@ using System.Drawing;
 using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
-using RC.Testing;
 
 namespace ShowMeAnExampleOfAutomapperFromLinkedSource
 {
@@ -30,15 +29,6 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
             );
         }
 
-        [Test]
-        public void MapModel_WithArrayModel_ShouldThrowArgumentException() {
-            Assert.Throws<ArgumentException>(() =>
-                Mapper
-                .CreateMap<ArrayLinkedSource, string>()
-                .MapModel()
-            );
-        }
-
 
 
         public class WannaBeLinkedSource
@@ -49,12 +39,5 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
         public class PrimitiveLinkedSource {
             public int Model { get; set; }
         }
-
-        public class ArrayLinkedSource {
-            public Point[] Model { get; set; }
-        }
-
-
-
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 using System.Reflection;
 using AutoMapper;
 
@@ -11,17 +9,11 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
     public static class MappingExpressionExtensions {
         public static IMappingExpression<TLinkedSource, TDestination> MapModel<TLinkedSource, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression)
         {
-            EnsureLinkedSourceHasModelProperty<TLinkedSource>();
-            EnsureLinkedSourceIsNonEnumerableClass<TLinkedSource>();
+            EnsureHasModelProperty<TLinkedSource>();
+            EnsureHasModelPropertyWhichIsAClass<TLinkedSource>();
 
-
-            var mappedBySameNameConventionProperties = GetMappedBySameNameConventionProperties<TLinkedSource, TDestination>();
-
-            foreach (var property in mappedBySameNameConventionProperties) {
-                var method = typeof(MappingExpressionExtensions).GetMethod("BindMember");
-                var genericMethod = method.MakeGenericMethod(typeof(TLinkedSource), typeof(TDestination), property.PropertyType);
-                genericMethod.Invoke(null, new object[] { "Model." + property.Name, property.Name, expression });
-            }
+            var modelPropertiesToMap = GetMappedBySameNameConventionProperties<TLinkedSource, TDestination>();
+            MapModelProperties(modelPropertiesToMap, expression);
 
             return expression;
         }
@@ -46,37 +38,67 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
                 .ToList();
         }
 
-        public static void BindMember<TLinkedSource, TDestination, TReference>(string sourcePropertyName, string destinationPropertyName, IMappingExpression<TLinkedSource, TDestination> expression) {
-            var lambda = CreateGenericExpression<TLinkedSource, TReference>(sourcePropertyName);
-            expression.ForMember(destinationPropertyName, opt => opt.MapFrom(lambda));
+        private static void MapModelProperties<TLinkedSource, TDestination>(
+            List<PropertyInfo> modelProperties,
+            IMappingExpression<TLinkedSource, TDestination> expression) 
+        {
+            foreach (var modelProperty in modelProperties) {
+                var method = typeof(MappingExpressionExtensions).GetMethod("MapProperty");
+                var genericMethod = method.MakeGenericMethod(
+                    typeof(TLinkedSource), 
+                    modelProperty.PropertyType,
+                    typeof(TDestination)
+                );
+                genericMethod.Invoke(null, new object[] { "Model." + modelProperty.Name, modelProperty.Name, expression });
+            }
         }
 
-        static Expression<Func<T, TReference>> CreateGenericExpression<T, TReference>(string propertyName) {
-            var param = Expression.Parameter(typeof(T), "x");
-            Expression body = param;
-            foreach (var member in propertyName.Split('.')) {
-                body = Expression.PropertyOrField(body, member);
+
+        public static void MapProperty<TLinkedSource, TSourceProperty, TDestination>(
+            string sourcePropertyInDotNotation, 
+            string destinationPropertyName, 
+            IMappingExpression<TLinkedSource, TDestination> expression) 
+        {
+            var memberExpression = CreateMemberExpression<TLinkedSource, TSourceProperty>(sourcePropertyInDotNotation);
+            expression.ForMember(destinationPropertyName, opt => opt.MapFrom(memberExpression));
+        }
+
+        static Expression<Func<T, TProperty>> CreateMemberExpression<T, TProperty>(string propertyInDotNotation) {
+            var root = Expression.Parameter(typeof(T), "root");
+            Expression lambdaBody = root;
+            foreach (var property in propertyInDotNotation.Split('.'))
+            {
+                lambdaBody = Expression.PropertyOrField(lambdaBody, property);
             }
 
-            return Expression.Lambda<Func<T, TReference>>(body, param);
+            return Expression.Lambda<Func<T, TProperty>>(lambdaBody, root);
         }
 
-        private static void EnsureLinkedSourceHasModelProperty<TLinkedSource>() {
+
+        private static void EnsureHasModelProperty<TLinkedSource>() {
             var linkedSourceType = typeof(TLinkedSource);
+            var linkedSourceTypeFullName = linkedSourceType.FullName;
             if (linkedSourceType.GetProperty("Model") == null) {
                 throw new ArgumentException(
-                    "TLinkedSource must have a property named Model, otherwise it cannot be used as a linked source.",
+                    string.Format(
+                        "{0} must have a property named Model, otherwise it cannot be used as a linked source.",
+                        linkedSourceTypeFullName
+                    ),
                     "TLinkedSource"
                 );
             }
         }
 
-        private static void EnsureLinkedSourceIsNonEnumerableClass<TLinkedSource>() {
+        private static void EnsureHasModelPropertyWhichIsAClass<TLinkedSource>() {
             var linkedSourceType = typeof(TLinkedSource);
+            var linkedSourceTypeFullName = linkedSourceType.FullName;
             var modelType = linkedSourceType.GetProperty("Model").PropertyType;
-            if (modelType.IsClass == false && typeof(IEnumerable).IsAssignableFrom(modelType) == false) {
+            if (modelType.IsClass == false) {
                 throw new ArgumentException(
-                    "TLinkedSource must be a class, otherwise it cannot be used as a linked source.",
+                    string.Format(
+                        "{0} must have a property named Model which is a class, otherwise it cannot be used as a linked source.",
+                        linkedSourceTypeFullName
+                    ),
                     "TLinkedSource"
                     );
             }
