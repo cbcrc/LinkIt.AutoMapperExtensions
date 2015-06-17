@@ -41,16 +41,16 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
 
             foreach (var property in mappedBySameNameConventionProperties) {
                 var method = typeof(MappingExpressionExtensions).GetMethod("BindMember");
-                var genericMethod = method.MakeGenericMethod(linkedSourceType, destinationType, property.GetType());
-                genericMethod.Invoke(null, new object[] { "Model." + property.Name, expression });
+                var genericMethod = method.MakeGenericMethod(linkedSourceType, destinationType, property.PropertyType);
+                genericMethod.Invoke(null, new object[] { "Model." + property.Name, property.Name, expression });
             }
 
             return expression;
         }
 
-        public static void BindMember<TLinkedSource, TDestination, TReference>(string propertyName, IMappingExpression<TLinkedSource, TDestination> expression) {
-            var lambda = CreateGenericExpression<TLinkedSource, TReference>(propertyName);
-            expression.ForMember(propertyName, opt => opt.MapFrom(lambda));
+        public static void BindMember<TLinkedSource, TDestination, TReference>(string sourcePropertyName, string destinationPropertyName, IMappingExpression<TLinkedSource, TDestination> expression) {
+            var lambda = CreateGenericExpression<TLinkedSource, TReference>(sourcePropertyName);
+            expression.ForMember(destinationPropertyName, opt => opt.MapFrom(lambda));
         }
 
         static Expression<Func<T, TReference>> CreateGenericExpression<T, TReference>(string propertyName) {
