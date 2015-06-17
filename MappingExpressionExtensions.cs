@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using AutoMapper;
 
 namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
@@ -21,44 +23,59 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource {
         public static IMappingExpression<TLinkedSource, TDestination> MapModel<TLinkedSource, TModel, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression) where TLinkedSource: ILinkedSource<TModel>
         {
             var modelType = typeof(TModel);
-            var modelPropertyNames = modelType.GetProperties()
-                .Select(property => property.Name)
-                .ToList();
+            var modelProperties = modelType.GetProperties();
 
             var linkedSourceType = typeof(TLinkedSource);
-            var referencePropertyNames = linkedSourceType.GetProperties()
-                .Select(property => property.Name)
-                .Where(propertyName => propertyName!="Model")
+            var referenceProperties = linkedSourceType.GetProperties()
+                .Where(property => property.Name!="Model")
                 .ToList();
 
             var destinationType = typeof(TDestination);
-            var destinationPropertyNames = destinationType.GetProperties()
-                .Select(property => property.Name)
+            var destinationProperties = destinationType.GetProperties();
+
+            var propertyNameComparer = new PropertyNameComparer();
+            var mappedBySameNameConventionProperties = modelProperties
+                .Intersect(destinationProperties, propertyNameComparer)
+                .Except(referenceProperties, propertyNameComparer)
                 .ToList();
 
-            var mappedBySameNameConventionPropertyNames = modelPropertyNames
-                .Intersect(destinationPropertyNames)
-                .Except(referencePropertyNames)
-                .ToList();
-
-            foreach (var propertyName in mappedBySameNameConventionPropertyNames)
-            {
-                var lambda = CreateExpression<TLinkedSource>("Model."+propertyName);
-
-                expression.ForMember(propertyName, opt => opt.MapFrom(lambda));
+            foreach (var property in mappedBySameNameConventionProperties) {
+                var method = typeof(MappingExpressionExtensions).GetMethod("BindMember");
+                var genericMethod = method.MakeGenericMethod(linkedSourceType, destinationType, property.GetType());
+                genericMethod.Invoke(null, new object[] { "Model." + property.Name, expression });
             }
 
             return expression;
         }
 
-        static Expression<Func<T, object>> CreateExpression<T>(string propertyName) {
+        public static void BindMember<TLinkedSource, TDestination, TReference>(string propertyName, IMappingExpression<TLinkedSource, TDestination> expression) {
+            var lambda = CreateGenericExpression<TLinkedSource, TReference>(propertyName);
+            expression.ForMember(propertyName, opt => opt.MapFrom(lambda));
+        }
+
+        static Expression<Func<T, TReference>> CreateGenericExpression<T, TReference>(string propertyName) {
             var param = Expression.Parameter(typeof(T), "x");
             Expression body = param;
             foreach (var member in propertyName.Split('.')) {
                 body = Expression.PropertyOrField(body, member);
             }
 
-            return Expression.Lambda<Func<T, object>>(body, param);
+//            body = Expression.Convert(body, typeof (TReference));
+
+            return Expression.Lambda<Func<T, TReference>>(body, param);
+        }
+    }
+
+    public class PropertyNameComparer : IEqualityComparer<PropertyInfo>
+    {
+        public bool Equals(PropertyInfo x, PropertyInfo y)
+        {
+            return x.Name.Equals(y.Name);
+        }
+
+        public int GetHashCode(PropertyInfo obj)
+        {
+            return obj.Name.GetHashCode();
         }
     }
 }

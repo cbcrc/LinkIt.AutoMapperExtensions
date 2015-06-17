@@ -37,10 +37,10 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
         private static MyComplexModel CreateMyComplexModel(int id, int? childId)
         {
             return new MyComplexModel{
-                Id = id,
+//                Id = id,
                 Title = "Title "+id,
-                Point = new MyPoint {X = id, Y = id},
-                ChildId = childId
+//                Point = new MyPoint {X = id, Y = id},
+//                ChildId = childId
             };
         }
 
@@ -51,10 +51,10 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource
         }
 
         public class MyComplexModel {
-            public int Id { get; set; }
+//            public int Id { get; set; }
             public string Title { get; set; }
-            public int? ChildId { get; set; }
-            public MyPoint Point { get; set; }
+//            public int? ChildId { get; set; }
+//            public MyPoint Point { get; set; }
         }
 
         public class MyPoint {
