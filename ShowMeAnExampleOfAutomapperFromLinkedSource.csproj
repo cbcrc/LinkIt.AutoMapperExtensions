@@ -44,10 +44,20 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Tavis.UriTemplates">
+      <HintPath>packages\Tavis.UriTemplates.0.6.3\lib\Net45\Tavis.UriTemplates.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoMappers\AnchorLinkResolver.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AutoMappers\NeuroAutoMapperExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AutoMappers\MappingExpressionExtensions.cs" />
+    <Compile Include="UrlTemplates\UrlTemplate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
