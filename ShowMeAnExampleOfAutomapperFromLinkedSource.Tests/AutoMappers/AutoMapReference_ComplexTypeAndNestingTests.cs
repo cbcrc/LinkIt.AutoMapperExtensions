@@ -2,6 +2,7 @@ using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
 using RC.Testing;
+using ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers;
 
 namespace ShowMeAnExampleOfAutomapperFromLinkedSource
 {

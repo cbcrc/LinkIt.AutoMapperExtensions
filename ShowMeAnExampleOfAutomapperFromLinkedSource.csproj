@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MappingExpressionExtensions.cs" />
+    <Compile Include="AutoMappers\MappingExpressionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

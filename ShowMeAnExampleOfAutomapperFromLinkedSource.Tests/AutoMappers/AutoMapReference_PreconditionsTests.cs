@@ -3,6 +3,7 @@ using System.Drawing;
 using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
+using ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers;
 
 namespace ShowMeAnExampleOfAutomapperFromLinkedSource
 {
