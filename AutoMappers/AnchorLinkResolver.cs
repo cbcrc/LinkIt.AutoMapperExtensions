@@ -1,9 +1,9 @@
 using System;
 using System.Linq.Expressions;
 using AutoMapper;
-using RC.Neuro.Web.UrlTemplates;
+using ShowMeAnExampleOfAutomapperFromLinkedSource.UrlTemplates;
 
-namespace RC.Scoop.Web.Api.AutoMappers
+namespace ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers
 {
     public class AnchorLinkResolver<TSource>: IValueResolver
     {

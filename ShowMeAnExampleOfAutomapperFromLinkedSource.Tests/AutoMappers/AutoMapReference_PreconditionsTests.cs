@@ -5,7 +5,7 @@ using AutoMapper;
 using NUnit.Framework;
 using ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers;
 
-namespace ShowMeAnExampleOfAutomapperFromLinkedSource
+namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
 {
     [UseReporter(typeof(DiffReporter))]
     [TestFixture]

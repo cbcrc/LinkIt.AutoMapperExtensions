@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Tavis.UriTemplates;
-using UriTemplate = Tavis.UriTemplates.UriTemplate;
 
-namespace RC.Neuro.Web.UrlTemplates
+namespace ShowMeAnExampleOfAutomapperFromLinkedSource.UrlTemplates
 {
     public class UrlTemplate
     {
