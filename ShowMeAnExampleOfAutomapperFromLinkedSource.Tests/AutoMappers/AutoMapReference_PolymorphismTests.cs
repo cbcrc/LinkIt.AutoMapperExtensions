@@ -57,12 +57,32 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
             Assert.That(asPolymorphicValueBDto.Z, Is.EqualTo("TheZ"));
         }
 
+        [Test]
+        public void Map_WithCustomRules() {
+            var source = new PolymorphicModel {
+                MyValue = new PolymorphicValueC {
+                    Y = "TheY",
+                }
+            };
+            CreateMappings();
+
+            var actual = Mapper.Map<PolymorphicDto>(source);
+
+            var asPolymorphicValueCDto = actual.MyValue as PolymorphicValueCDto;
+            Assert.That(asPolymorphicValueCDto, Is.Not.Null);
+            Assert.That(asPolymorphicValueCDto.Y, Is.EqualTo("TheY-custom"));
+        }
+
         private static void CreateMappings()
         {
             Mapper.CreateMap<PolymorphicModel, PolymorphicDto>();
             Mapper.CreateMap<IPolymorphicValue, IPolymorphicValueDto>()
                 .Include<PolymorphicValueA, PolymorphicValueADto>()
-                .Include<PolymorphicValueB, PolymorphicValueBDto>();
+                .Include<PolymorphicValueB, PolymorphicValueBDto>()
+                .Include<PolymorphicValueC, PolymorphicValueCDto>();
+
+            Mapper.CreateMap<PolymorphicValueC, PolymorphicValueCDto>()
+                .ForMember(dto=>dto.Y, member=>member.ResolveUsing(source=>source.Y+"-custom"));
         }
 
 
@@ -86,6 +106,11 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
             public string Z { get; set; }
         }
 
+        public class PolymorphicValueC : IPolymorphicValue {
+            public string Y { get; set; }
+        }
+
+
 
         public interface PolymorphicDto {
             IPolymorphicValueDto MyValue { get; set; }
@@ -103,6 +128,10 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
         public class PolymorphicValueBDto : IPolymorphicValueDto {
             public string Y { get; set; }
             public string Z { get; set; }
+        }
+
+        public class PolymorphicValueCDto : IPolymorphicValueDto {
+            public string Y { get; set; }
         }
 
     }
