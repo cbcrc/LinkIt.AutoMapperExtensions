@@ -1,6 +1,7 @@
 using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
+using ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers;
 
 namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
 {
@@ -11,8 +12,8 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
         [SetUp]
         public void SetUp() {
             Mapper.CreateMap<MyMediaLinkedSource, MyMediaSummaryDto>()
+                .MapModel2()
                 .ForMember(dto => dto.Id, member => member.MapFrom(source => source.Model.Id))
-                .ForMember(dto => dto.Title, member => member.MapFrom(source => source.ModelContextualization.Title ?? source.Model.Title))
                 .ForMember(dto => dto.SeekTimeInSec, member => member.MapFrom(source => source.ModelContextualization.SeekTimeInSec));
         }
 

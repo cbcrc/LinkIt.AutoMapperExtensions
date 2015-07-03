@@ -80,6 +80,7 @@
     <Compile Include="AutoMappers\AutoMapReference_PolymorphismTests.cs" />
     <Compile Include="AutoMappers\AutoMapReference_CustomMappingTests.cs" />
     <Compile Include="AutoMappers\AutoMapReference_PreconditionsTests.cs" />
+    <Compile Include="AutoMappers\CallFuncExpressionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

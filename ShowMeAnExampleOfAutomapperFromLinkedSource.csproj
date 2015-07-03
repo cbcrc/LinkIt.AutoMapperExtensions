@@ -54,6 +54,7 @@
     <Compile Include="AutoMappers\AnchorLinkResolver.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AutoMappers\MappingExpressionExtensions2.cs" />
     <Compile Include="AutoMappers\NeuroAutoMapperExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
