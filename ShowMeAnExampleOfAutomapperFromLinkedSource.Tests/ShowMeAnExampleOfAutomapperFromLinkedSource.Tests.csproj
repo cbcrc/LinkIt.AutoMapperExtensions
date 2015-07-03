@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="AutoMappers\AutoMapReferencePerformanceTests.cs" />
     <Compile Include="AutoMappers\AutoMapReference_ComplexTypeAndNestingTests.cs" />
+    <Compile Include="AutoMappers\AutoMapReference_ContextualizationTests.cs" />
     <Compile Include="AutoMappers\AutoMapReference_PolymorphismTests.cs" />
     <Compile Include="AutoMappers\AutoMapReference_CustomMappingTests.cs" />
     <Compile Include="AutoMappers\AutoMapReference_PreconditionsTests.cs" />
