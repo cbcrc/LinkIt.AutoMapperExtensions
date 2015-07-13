@@ -35,6 +35,11 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.UrlTemplates
             _urlParameters = urlParameters;
         }
 
+        public UrlTemplate DeepCopy()
+        {
+            return new UrlTemplate(_webApiRouteTemplate, new Dictionary<string, object>(_urlParameters));
+        }
+
         public UrlTemplate SetParameter(string key, object value)
         {
             _urlParameters[key] = value;

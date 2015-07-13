@@ -21,7 +21,8 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers
                 return source.New(null);
             }
 
-            var urlTemplate = (UrlTemplate)source.Context.Options.Items["RootUrlTemplate"];
+            var rootUrlTemplate = (UrlTemplate)source.Context.Options.Items["RootUrlTemplate"];
+            var urlTemplate = rootUrlTemplate.DeepCopy();
             urlTemplate.SetParameter("fragment", _fragmentExpression.Invoke((TSource)source.Value));
 
             return source.New(urlTemplate.Resolve());
