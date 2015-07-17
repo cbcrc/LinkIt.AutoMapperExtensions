@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoMapReference_ComplexTypeAndNestingTests.cs" />
+    <Compile Include="AutoMapReference_ContextualizationTests.cs" />
     <Compile Include="AutoMapReference_CustomMappingTests.cs" />
     <Compile Include="AutoMapReference_PolymorphismTests.cs" />
     <Compile Include="AutoMapReference_PreconditionsTests.cs" />
