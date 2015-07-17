@@ -1,20 +1,23 @@
-using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
-using ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers;
 
-namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
+namespace RC.AutoMapper.Tests
 {
-    [UseReporter(typeof(DiffReporter))]
     [TestFixture]
     public class AutoMapReference_CustomMappingTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Mapper.Reset();
+        }
+
         [Test]
         public void MapModel_WithCustomMappingForOtherProperty_ShouldMap()
         {
             Mapper
                 .CreateMap<MyCustomLinkedSource, MyCustomDto>()
-                .MapModel()
+                .MapLinkedSource()
                 .ForMember(destination => destination.SelfUrl, opt => opt.MapFrom(src => "http://blah.com/" + src.Model.Id));
 
             Mapper.AssertConfigurationIsValid();
@@ -34,7 +37,7 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
         {
             Mapper
                 .CreateMap<MyCustomLinkedSource, MyCustomDto>()
-                .MapModel()
+                .MapLinkedSource()
                 .ForMember(destination => destination.Title, opt => opt.MapFrom(src => src.Model.Title + " TEST"))
                 .ForMember(destination => destination.SelfUrl, opt => opt.Ignore());
 

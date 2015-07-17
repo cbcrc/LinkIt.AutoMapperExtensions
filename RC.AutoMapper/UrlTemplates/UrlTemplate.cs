@@ -2,22 +2,27 @@ using System;
 using System.Collections.Generic;
 using Tavis.UriTemplates;
 
-namespace ShowMeAnExampleOfAutomapperFromLinkedSource.UrlTemplates
+namespace RC.AutoMapper.UrlTemplates
 {
     public class UrlTemplate
     {
-        private static Uri BaseUrl=null;
-        private static Dictionary<string, string> UrlTemplateOverrides;
+        private static Uri _baseUrl;
+        private static readonly IDictionary<string, string> _urlTemplateOverrides = new Dictionary<string, string>();
 
-        //stle: think about a better solution: NeuroUrlTemplate.Init
-        public static void Init(Uri baseUrl, Dictionary<string, string> urlTemplateOverrides)
+        public static Uri BaseUrl
         {
-            //stle: need code contract + assertion lib
-            if (baseUrl == null) { throw new ArgumentNullException("baseUrl"); }
-            if (BaseUrl != null) { throw new InvalidOperationException("Init once and only once"); }
+            get { return _baseUrl; }
+            set
+            {
+                if (value == null) { throw new ArgumentNullException("value", "Base URL cannot be null."); }
 
-            BaseUrl = baseUrl;
-            UrlTemplateOverrides = urlTemplateOverrides;
+                _baseUrl = value;
+            }
+        }
+
+        public static IDictionary<string, string> UrlTemplateOverrides
+        {
+            get { return _urlTemplateOverrides; }
         }
 
         private readonly string _webApiRouteTemplate;
@@ -51,8 +56,8 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.UrlTemplates
         {
             if (ContainsNullId()) { return null; }
 
-            var urlTemplate = UrlTemplateOverrides.ContainsKey(_webApiRouteTemplate)?
-                UrlTemplateOverrides[_webApiRouteTemplate]
+            var urlTemplate = _urlTemplateOverrides.ContainsKey(_webApiRouteTemplate)?
+                _urlTemplateOverrides[_webApiRouteTemplate]
                 :_webApiRouteTemplate;
 
             var template = new UriTemplate(urlTemplate)

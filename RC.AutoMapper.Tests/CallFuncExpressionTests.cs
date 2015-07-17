@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers {
+namespace RC.AutoMapper.Tests {
     [TestFixture]
     public class CallFuncExpressionTests {
         [Test]

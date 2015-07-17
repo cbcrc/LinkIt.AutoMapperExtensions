@@ -1,18 +1,15 @@
-using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
-using RC.Testing;
-using ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers;
 
-namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
+namespace RC.AutoMapper.Tests
 {
-    [UseReporter(typeof(DiffReporter))]
     [TestFixture]
     public class AutoMapReference_PolymorphismTests
     {
         [Test]
         public void AssertConfigurationIsValid()
         {
+            Mapper.Reset();
             CreateMappings();
             Mapper.AssertConfigurationIsValid();
         }

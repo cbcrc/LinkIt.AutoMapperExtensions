@@ -1,15 +1,17 @@
 using System;
-using System.Drawing;
-using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
-using ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers;
 
-namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
+namespace RC.AutoMapper.Tests
 {
-    [UseReporter(typeof(DiffReporter))]
     [TestFixture]
-    public class AutoMapReference_PreconditionsTests {
+    public class AutoMapReference_PreconditionsTests 
+    {
+        [SetUp]
+        public void SetUp()
+        {
+            Mapper.Reset();
+        }
 
         [Test]
         public void MapModel_WithoutModelProperty_ShouldThrowArgumentException()
@@ -17,7 +19,7 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
             Assert.Throws<ArgumentException>(()=>            
                 Mapper
                 .CreateMap<WannaBeLinkedSource, string>()
-                .MapModel()
+                .MapLinkedSource()
             );
         }
 
@@ -26,15 +28,14 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
             Assert.Throws<ArgumentException>(() =>
                 Mapper
                 .CreateMap<PrimitiveLinkedSource, string>()
-                .MapModel()
+                .MapLinkedSource()
             );
         }
 
 
-
         public class WannaBeLinkedSource
         {
-            public Point NotAModel { get; set; }
+            public Tuple<string, string> NotAModel { get; set; }
         }
 
         public class PrimitiveLinkedSource {

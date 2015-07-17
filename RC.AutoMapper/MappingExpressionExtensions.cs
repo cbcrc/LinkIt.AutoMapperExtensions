@@ -5,11 +5,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using AutoMapper;
 
-namespace ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers
+namespace RC.AutoMapper
 {
     public static class MappingExpressionExtensions
     {
-        public static IMappingExpression<TLinkedSource, TDestination> MapModel<TLinkedSource, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression)
+        public static IMappingExpression<TLinkedSource, TDestination> MapLinkedSource<TLinkedSource, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression)
         {
             EnsureHasModelProperty<TLinkedSource>();
             EnsureHasModelPropertyWhichIsAClass<TLinkedSource>();

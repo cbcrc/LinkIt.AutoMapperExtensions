@@ -1,21 +1,18 @@
-using ApprovalTests.Reporters;
 using AutoMapper;
 using NUnit.Framework;
-using RC.Testing;
-using ShowMeAnExampleOfAutomapperFromLinkedSource.AutoMappers;
 
-namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
+namespace RC.AutoMapper.Tests
 {
-    [UseReporter(typeof(DiffReporter))]
     [TestFixture]
     public class AutoMapReference_ComplexTypeAndNestingTests {
 
         [SetUp]
         public void SetUp()
         {
+            Mapper.Reset();
             Mapper
                 .CreateMap<NestedLinkedSource, MyComplexDto>()
-                .MapModel();
+                .MapLinkedSource();
             Mapper.CreateMap<MyPoint, MyPointDto>();
             Mapper.CreateMap<ListOfNestedLinkedSource, ListOfMyComplexDto>();
         }
@@ -37,7 +34,11 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
                 
             var actual = Mapper.Map<MyComplexDto>(source);
 
-            ApprovalsExt.VerifyPublicProperties(actual);
+            Assert.That(actual.Id, Is.EqualTo(source.Model.Id));
+            Assert.That(actual.Title, Is.EqualTo(source.Model.Title));
+            Assert.That(actual.Point.X, Is.EqualTo(source.Model.Point.X));
+            Assert.That(actual.Point.Y, Is.EqualTo(source.Model.Point.Y));
+            Assert.That(actual.Child, Is.Null);
         }
 
         [Test]
@@ -55,7 +56,20 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
 
             var actual = Mapper.Map<MyComplexDto>(source);
 
-            ApprovalsExt.VerifyPublicProperties(actual);
+            Assert.That(actual.Id, Is.EqualTo(source.Model.Id));
+            Assert.That(actual.Title, Is.EqualTo(source.Model.Title));
+            Assert.That(actual.Point.X, Is.EqualTo(source.Model.Point.X));
+            Assert.That(actual.Point.Y, Is.EqualTo(source.Model.Point.Y));
+
+            Assert.That(actual.Child.Id, Is.EqualTo(source.Child.Model.Id));
+            Assert.That(actual.Child.Title, Is.EqualTo(source.Child.Model.Title));
+            Assert.That(actual.Child.Point.X, Is.EqualTo(source.Child.Model.Point.X));
+            Assert.That(actual.Child.Point.Y, Is.EqualTo(source.Child.Model.Point.Y));
+
+            Assert.That(actual.Child.Child.Id, Is.EqualTo(source.Child.Child.Model.Id));
+            Assert.That(actual.Child.Child.Title, Is.EqualTo(source.Child.Child.Model.Title));
+            Assert.That(actual.Child.Child.Point.X, Is.EqualTo(source.Child.Child.Model.Point.X));
+            Assert.That(actual.Child.Child.Point.Y, Is.EqualTo(source.Child.Child.Model.Point.Y));
         }
 
         [Test]
@@ -74,7 +88,17 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
 
             var actual = Mapper.Map<MyComplexDto[]>(source);
 
-            ApprovalsExt.VerifyPublicProperties(actual);
+            Assert.That(actual[0].Id, Is.EqualTo(source[0].Model.Id));
+            Assert.That(actual[0].Title, Is.EqualTo(source[0].Model.Title));
+            Assert.That(actual[0].Point.X, Is.EqualTo(source[0].Model.Point.X));
+            Assert.That(actual[0].Point.Y, Is.EqualTo(source[0].Model.Point.Y));
+            Assert.That(actual[0].Child, Is.Null);
+
+            Assert.That(actual[1].Id, Is.EqualTo(source[1].Model.Id));
+            Assert.That(actual[1].Title, Is.EqualTo(source[1].Model.Title));
+            Assert.That(actual[1].Point.X, Is.EqualTo(source[1].Model.Point.X));
+            Assert.That(actual[1].Point.Y, Is.EqualTo(source[1].Model.Point.Y));
+            Assert.That(actual[1].Child, Is.Null);
         }
 
         [Test]
@@ -95,7 +119,17 @@ namespace ShowMeAnExampleOfAutomapperFromLinkedSource.Tests.AutoMappers
 
             var actual = Mapper.Map<ListOfMyComplexDto>(source);
 
-            ApprovalsExt.VerifyPublicProperties(actual);
+            Assert.That(actual.Items[0].Id, Is.EqualTo(source.Items[0].Model.Id));
+            Assert.That(actual.Items[0].Title, Is.EqualTo(source.Items[0].Model.Title));
+            Assert.That(actual.Items[0].Point.X, Is.EqualTo(source.Items[0].Model.Point.X));
+            Assert.That(actual.Items[0].Point.Y, Is.EqualTo(source.Items[0].Model.Point.Y));
+            Assert.That(actual.Items[0].Child, Is.Null);
+
+            Assert.That(actual.Items[1].Id, Is.EqualTo(source.Items[1].Model.Id));
+            Assert.That(actual.Items[1].Title, Is.EqualTo(source.Items[1].Model.Title));
+            Assert.That(actual.Items[1].Point.X, Is.EqualTo(source.Items[1].Model.Point.X));
+            Assert.That(actual.Items[1].Point.Y, Is.EqualTo(source.Items[1].Model.Point.Y));
+            Assert.That(actual.Items[1].Child, Is.Null);
         }
 
 
