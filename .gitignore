@@ -4,7 +4,11 @@
 # User-specific files
 *.suo
 *.user
+*.userosscache
 *.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
 
 # Build results
 [Dd]ebug/
@@ -18,14 +22,14 @@ bld/
 [Bb]in/
 [Oo]bj/
 
-# Roslyn cache directories
-*.ide/
+# Visual Studio 2015 cache/options directory
+.vs/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
-#NUNIT
+# NUNIT
 *.VisualState.xml
 TestResult.xml
 
@@ -34,6 +38,10 @@ TestResult.xml
 [Rr]eleasePS/
 dlldata.c
 
+# DNX
+project.lock.json
+artifacts/
+
 *_i.c
 *_p.c
 *_i.h
@@ -41,6 +49,7 @@ dlldata.c
 *.meta
 *.obj
 *.pch
+*.pdb
 *.pgc
 *.pgd
 *.rsp
@@ -57,9 +66,6 @@ dlldata.c
 *.pidb
 *.svclog
 *.scc
-*log.txt
-
-neuro-log.txt
 
 # Chutzpah Test files
 _Chutzpah*
@@ -88,7 +94,7 @@ _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
-# JustCode is a .NET coding addin-in
+# JustCode is a .NET coding add-in
 .JustCode
 
 # TeamCity is a build add-in
@@ -127,14 +133,18 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
+# TODO: Comment the next line if you want to checkin your web deploy settings
+# but database connection strings (with potential passwords) will be unencrypted
+*.pubxml
+*.publishproj
 
 # NuGet Packages
 *.nupkg
 # The packages folder can be ignored because of Package Restore
-/packages/
+**/packages/*
 # except build/, which is used as an MSBuild target.
 !**/packages/build/
-# If using the old MSBuild-Integrated Package Restore, uncomment this:
+# Uncomment if necessary however generally it will be regenerated when needed
 #!**/packages/repositories.config
 
 # Windows Azure Build Output
@@ -144,9 +154,13 @@ csx/
 # Windows Store app package directory
 AppPackages/
 
+# Visual Studio cache files
+# files ending in .cache can be ignored
+*.[Cc]ache
+# but keep track of directories ending in .cache
+!*.[Cc]ache/
+
 # Others
-sql/
-*.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
 ~$*
@@ -156,6 +170,7 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
+orleans.codegen.cs
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -178,13 +193,13 @@ UpgradeLog*.htm
 *.bim_*.settings
 
 # Microsoft Fakes
-Cache/
-/RC.DotCa.Websites.RadioCanada/App_Data/Cache
-/scaffolding.config
-/packages
-packages
-generated
-obj
-/RC.Neuro.Web/neuro-log.txt
-# Custom
-*.received.txt
+FakesAssemblies/
+
+# Node.js Tools for Visual Studio
+.ntvs_analysis.dat
+
+# Visual Studio 6 build log
+*.plg
+
+# Visual Studio 6 workspace options file
+*.opt
