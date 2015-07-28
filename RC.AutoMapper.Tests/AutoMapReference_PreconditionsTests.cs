@@ -7,8 +7,8 @@ namespace RC.AutoMapper.Tests
     [TestFixture]
     public class AutoMapReference_PreconditionsTests 
     {
-        [SetUp]
-        public void SetUp()
+        [TearDown]
+        public void TearDown()
         {
             Mapper.Reset();
         }

@@ -6,11 +6,28 @@ namespace RC.AutoMapper.Tests
     [TestFixture]
     public class AutoMapReference_PolymorphismTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Mapper.CreateMap<PolymorphicModel, PolymorphicDto>();
+            Mapper.CreateMap<IPolymorphicValue, IPolymorphicValueDto>()
+                .Include<PolymorphicValueA, PolymorphicValueADto>()
+                .Include<PolymorphicValueB, PolymorphicValueBDto>()
+                .Include<PolymorphicValueC, PolymorphicValueCDto>();
+
+            Mapper.CreateMap<PolymorphicValueC, PolymorphicValueCDto>()
+                .ForMember(dto => dto.Y, member => member.ResolveUsing(source => source.Y + "-custom"));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Mapper.Reset();
+        }
+
         [Test]
         public void AssertConfigurationIsValid()
         {
-            Mapper.Reset();
-            CreateMappings();
             Mapper.AssertConfigurationIsValid();
         }
         
@@ -26,7 +43,6 @@ namespace RC.AutoMapper.Tests
                     Y = "TheY",
                 }
             };
-            CreateMappings();
 
             var actual = Mapper.Map<PolymorphicDto>(source);
 
@@ -44,7 +60,6 @@ namespace RC.AutoMapper.Tests
                     Z = "TheZ",
                 }
             };
-            CreateMappings();
 
             var actual = Mapper.Map<PolymorphicDto>(source);
 
@@ -61,7 +76,6 @@ namespace RC.AutoMapper.Tests
                     Y = "TheY",
                 }
             };
-            CreateMappings();
 
             var actual = Mapper.Map<PolymorphicDto>(source);
 
@@ -69,20 +83,6 @@ namespace RC.AutoMapper.Tests
             Assert.That(asPolymorphicValueCDto, Is.Not.Null);
             Assert.That(asPolymorphicValueCDto.Y, Is.EqualTo("TheY-custom"));
         }
-
-        private static void CreateMappings()
-        {
-            Mapper.CreateMap<PolymorphicModel, PolymorphicDto>();
-            Mapper.CreateMap<IPolymorphicValue, IPolymorphicValueDto>()
-                .Include<PolymorphicValueA, PolymorphicValueADto>()
-                .Include<PolymorphicValueB, PolymorphicValueBDto>()
-                .Include<PolymorphicValueC, PolymorphicValueCDto>();
-
-            Mapper.CreateMap<PolymorphicValueC, PolymorphicValueCDto>()
-                .ForMember(dto=>dto.Y, member=>member.ResolveUsing(source=>source.Y+"-custom"));
-        }
-
-
         
 
         public class PolymorphicModel {

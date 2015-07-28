@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -9,26 +10,35 @@ namespace RC.AutoMapper
 {
     public static class MappingExpressionExtensions
     {
+        private const string ModelPropertyName = "Model";
+        private const string ModelContextualizationPropertyName = "ModelContextualization";
+
         public static IMappingExpression<TLinkedSource, TDestination> MapLinkedSource<TLinkedSource, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression)
         {
             EnsureHasModelProperty<TLinkedSource>();
             EnsureHasModelPropertyWhichIsAClass<TLinkedSource>();
 
+            var propertyNameComparer = new PropertyNameComparer();
             var modelPropertiesToMap = GetMappedBySameNameConventionProperties<TLinkedSource, TDestination>();
-            MapModelProperties(modelPropertiesToMap, expression);
+            var contexualizedProperties = GetModelContextualizationProperties<TLinkedSource>();
+
+            var modelSimplePropertiesToMap = modelPropertiesToMap.Except(contexualizedProperties, propertyNameComparer);
+            MapModelProperties(modelSimplePropertiesToMap, expression);
+
+            var modelContextualizationPropertiesToMap = modelPropertiesToMap.Intersect(contexualizedProperties, propertyNameComparer);
+            MapModelContextualizedProperties(modelContextualizationPropertiesToMap, expression);
 
             return expression;
         }
 
-        private static List<PropertyInfo> GetMappedBySameNameConventionProperties<TLinkedSource, TDestination>()
+        private static IEnumerable<PropertyInfo> GetMappedBySameNameConventionProperties<TLinkedSource, TDestination>()
         {
-
             var linkedSourceType = typeof(TLinkedSource);
-            var modelType = linkedSourceType.GetProperty("Model").PropertyType;
+            var modelType = linkedSourceType.GetProperty(ModelPropertyName).PropertyType;
             var modelProperties = modelType.GetProperties();
 
             var referenceProperties = linkedSourceType.GetProperties()
-                .Where(property => property.Name != "Model")
+                .Where(property => property.Name != ModelPropertyName)
                 .ToList();
 
             var destinationType = typeof(TDestination);
@@ -41,42 +51,116 @@ namespace RC.AutoMapper
                 .ToList();
         }
 
+        private static IEnumerable<PropertyInfo> GetModelContextualizationProperties<TLinkedSource>()
+        {
+            var linkedSourceType = typeof(TLinkedSource);
+            var modelContextualization = linkedSourceType.GetProperty(ModelContextualizationPropertyName);
+            if (modelContextualization == null)
+            {
+                return Enumerable.Empty<PropertyInfo>();
+            }
+
+            var modelContextualizationType = modelContextualization.PropertyType;
+            var modelContextualizationProperties = modelContextualizationType.GetProperties();
+
+            return modelContextualizationProperties;
+        }
+
         private static void MapModelProperties<TLinkedSource, TDestination>(
-            List<PropertyInfo> modelProperties,
+            IEnumerable<PropertyInfo> modelProperties,
             IMappingExpression<TLinkedSource, TDestination> expression)
         {
             foreach (var modelProperty in modelProperties)
             {
-                var method = typeof(MappingExpressionExtensions).GetMethod("MapProperty");
+                var method = typeof(MappingExpressionExtensions).GetMethod("MapModelProperty");
                 var genericMethod = method.MakeGenericMethod(
                     typeof(TLinkedSource),
                     modelProperty.PropertyType,
                     typeof(TDestination)
                 );
-                genericMethod.Invoke(null, new object[] { "Model." + modelProperty.Name, modelProperty.Name, expression });
+                genericMethod.Invoke(null, new object[]
+                {
+                    modelProperty.Name,
+                    expression
+                });
             }
         }
 
-
-        public static void MapProperty<TLinkedSource, TSourceProperty, TDestination>(
-            string sourcePropertyInDotNotation,
-            string destinationPropertyName,
+        private static void MapModelContextualizedProperties<TLinkedSource, TDestination>(
+            IEnumerable<PropertyInfo> modelProperties,
             IMappingExpression<TLinkedSource, TDestination> expression)
         {
-            var memberExpression = CreateMemberExpression<TLinkedSource, TSourceProperty>(sourcePropertyInDotNotation);
-            expression.ForMember(destinationPropertyName, opt => opt.MapFrom(memberExpression));
+            foreach (var modelProperty in modelProperties)
+            {
+                var method = typeof(MappingExpressionExtensions).GetMethod("MapModelContextualizedProperty");
+                var genericMethod = method.MakeGenericMethod(
+                    typeof(TLinkedSource),
+                    modelProperty.PropertyType,
+                    typeof(TDestination)
+                );
+                genericMethod.Invoke(null, new object[]
+                {
+                    modelProperty.Name,
+                    expression
+                });
+            }
         }
 
-        static Expression<Func<T, TProperty>> CreateMemberExpression<T, TProperty>(string propertyInDotNotation)
+
+        public static void MapModelProperty<TLinkedSource, TSourceProperty, TDestination>(string propertyName,
+            IMappingExpression<TLinkedSource, TDestination> expression)
+        {
+            var sourcePropertyInDotNotation = string.Format("{0}.{1}", ModelPropertyName, propertyName);
+            var memberExpression = CreateMemberExpression<TLinkedSource, TSourceProperty>(sourcePropertyInDotNotation);
+
+            expression.ForMember(propertyName, opt => opt.MapFrom(memberExpression));
+        }
+
+        public static void MapModelContextualizedProperty<TLinkedSource, TSourceProperty, TDestination>(string propertyName,
+            IMappingExpression<TLinkedSource, TDestination> expression)
+        {
+            var contextualizationFunc = CreateContextualizationFunc<TLinkedSource, TSourceProperty>(propertyName);
+            expression.ForMember(propertyName, opt => opt.ResolveUsing(contextualizationFunc));
+        }
+
+
+        private static Expression<Func<T, TProperty>> CreateMemberExpression<T, TProperty>(string propertyInDotNotation)
         {
             var root = Expression.Parameter(typeof(T), "root");
-            Expression lambdaBody = root;
+            Expression lambdaBody = GenerateGetProperty<T>(root, propertyInDotNotation);
+            return Expression.Lambda<Func<T, TProperty>>(lambdaBody, root);
+        }
+
+        static Func<T, object> CreateContextualizationFunc<T, TProperty>(string propertyName)
+        {
+            string overridingPropertyInDotNotation = string.Format("{0}.{1}", ModelContextualizationPropertyName, propertyName);
+            string defaultPropertyInDotNotation = string.Format("{0}.{1}", ModelPropertyName, propertyName);
+
+            var root = Expression.Parameter(typeof(T), "root");
+            Expression overridingProperty = GenerateGetProperty<T>(root, overridingPropertyInDotNotation);
+            Expression defaultProperty = GenerateGetProperty<T>(root, defaultPropertyInDotNotation);
+
+            var contextualizeFuncInvocation = Expression.Call(typeof(MappingExpressionExtensions), "ContextualizeFunc", new[] { typeof(TProperty) }, overridingProperty, defaultProperty);
+            var x = Expression.Convert(contextualizeFuncInvocation, typeof(object));
+            return Expression.Lambda<Func<T, object>>(x, root).Compile();
+        }
+
+
+        private static Expression GenerateGetProperty<T>(ParameterExpression root, string propertyInDotNotation)
+        {
+            Expression propertyExpression = root;
             foreach (var property in propertyInDotNotation.Split('.'))
             {
-                lambdaBody = Expression.PropertyOrField(lambdaBody, property);
+                propertyExpression = Expression.PropertyOrField(propertyExpression, property);
             }
+            return propertyExpression;
+        }
 
-            return Expression.Lambda<Func<T, TProperty>>(lambdaBody, root);
+        public static T ContextualizeFunc<T>(T overridingValue, T defaultValue)
+        {
+            return Equals(overridingValue, default(T))
+                ? defaultValue
+                : overridingValue;
         }
 
 
@@ -84,7 +168,7 @@ namespace RC.AutoMapper
         {
             var linkedSourceType = typeof(TLinkedSource);
             var linkedSourceTypeFullName = linkedSourceType.FullName;
-            if (linkedSourceType.GetProperty("Model") == null)
+            if (linkedSourceType.GetProperty(ModelPropertyName) == null)
             {
                 throw new ArgumentException(
                     string.Format(
@@ -100,7 +184,7 @@ namespace RC.AutoMapper
         {
             var linkedSourceType = typeof(TLinkedSource);
             var linkedSourceTypeFullName = linkedSourceType.FullName;
-            var modelType = linkedSourceType.GetProperty("Model").PropertyType;
+            var modelType = linkedSourceType.GetProperty(ModelPropertyName).PropertyType;
             if (modelType.IsClass == false)
             {
                 throw new ArgumentException(

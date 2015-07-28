@@ -9,12 +9,17 @@ namespace RC.AutoMapper.Tests
         [SetUp]
         public void SetUp()
         {
-            Mapper.Reset();
             Mapper
                 .CreateMap<NestedLinkedSource, MyComplexDto>()
                 .MapLinkedSource();
             Mapper.CreateMap<MyPoint, MyPointDto>();
             Mapper.CreateMap<ListOfNestedLinkedSource, ListOfMyComplexDto>();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Mapper.Reset();
         }
 
         [Test]
