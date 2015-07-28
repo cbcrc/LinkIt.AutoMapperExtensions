@@ -100,6 +100,25 @@ namespace RC.AutoMapper.Tests
         }
 
         [Test]
+        public void Map_WithNullContextualization_ShouldNotContextualizeValue()
+        {
+            var linkedSource = new MyMediaLinkedSource
+            {
+                Model = new MyMedia
+                {
+                    Id = 1,
+                    Title = "The title"
+                },
+                ModelContextualization = null
+            };
+
+            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+
+            Assert.That(actual.Title, Is.EqualTo("The title"));
+        }
+
+
+        [Test]
         public void Map_WithNestedContextualizedLinkedSource_ShouldContextualizeValue()
         {
             var linkedSource = new MyComplexLinkedSource

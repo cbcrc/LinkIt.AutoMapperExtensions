@@ -127,26 +127,37 @@ namespace RC.AutoMapper
         private static Expression<Func<T, TProperty>> CreateMemberExpression<T, TProperty>(string propertyInDotNotation)
         {
             var root = Expression.Parameter(typeof(T), "root");
-            Expression lambdaBody = GenerateGetProperty<T>(root, propertyInDotNotation);
+            var lambdaBody = GenerateGetProperty(root, propertyInDotNotation);
             return Expression.Lambda<Func<T, TProperty>>(lambdaBody, root);
         }
-
-        static Func<T, object> CreateContextualizationFunc<T, TProperty>(string propertyName)
+        
+        private static Func<T, object> CreateContextualizationFunc<T, TProperty>(string propertyName)
         {
-            string overridingPropertyInDotNotation = string.Format("{0}.{1}", ModelContextualizationPropertyName, propertyName);
-            string defaultPropertyInDotNotation = string.Format("{0}.{1}", ModelPropertyName, propertyName);
+            var overridingPropertyInDotNotation = string.Format("{0}.{1}", ModelContextualizationPropertyName, propertyName);
+            var defaultPropertyInDotNotation = string.Format("{0}.{1}", ModelPropertyName, propertyName);
 
             var root = Expression.Parameter(typeof(T), "root");
-            Expression overridingProperty = GenerateGetProperty<T>(root, overridingPropertyInDotNotation);
-            Expression defaultProperty = GenerateGetProperty<T>(root, defaultPropertyInDotNotation);
 
-            var contextualizeFuncInvocation = Expression.Call(typeof(MappingExpressionExtensions), "ContextualizeFunc", new[] { typeof(TProperty) }, overridingProperty, defaultProperty);
-            var x = Expression.Convert(contextualizeFuncInvocation, typeof(object));
+            var contextualizationProperty = GenerateGetProperty(root, ModelContextualizationPropertyName);
+
+            // Create comparison: root.ModelContextualization == null
+            var nullExpression = Expression.Constant(null, contextualizationProperty.Type);
+            var isContextualizationNull = Expression.Equal(contextualizationProperty, nullExpression);
+
+            // Create call: Contextualize(root.ModelContextualization.Property, root.Model.Property)
+            var overridingProperty = GenerateGetProperty(root, overridingPropertyInDotNotation);
+            var defaultProperty = GenerateGetProperty(root, defaultPropertyInDotNotation);
+            var contextualize = Expression.Call(typeof(MappingExpressionExtensions), "Contextualize", new[] { typeof(TProperty) }, overridingProperty, defaultProperty);
+
+            // Create: root.ModelContextualization == null ? root.Model.Property : Contextualize(root.ModelContextualization.Property, root.Model.Property)
+            var defaultOrContextualize = Expression.Condition(isContextualizationNull, defaultProperty, contextualize);
+
+            var x = Expression.Convert(defaultOrContextualize, typeof(object));
             return Expression.Lambda<Func<T, object>>(x, root).Compile();
         }
 
 
-        private static Expression GenerateGetProperty<T>(ParameterExpression root, string propertyInDotNotation)
+        private static Expression GenerateGetProperty(ParameterExpression root, string propertyInDotNotation)
         {
             Expression propertyExpression = root;
             foreach (var property in propertyInDotNotation.Split('.'))
@@ -156,7 +167,7 @@ namespace RC.AutoMapper
             return propertyExpression;
         }
 
-        public static T ContextualizeFunc<T>(T overridingValue, T defaultValue)
+        public static T Contextualize<T>(T overridingValue, T defaultValue)
         {
             return Equals(overridingValue, default(T))
                 ? defaultValue
