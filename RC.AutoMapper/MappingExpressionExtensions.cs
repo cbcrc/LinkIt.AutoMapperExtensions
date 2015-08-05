@@ -61,7 +61,9 @@ namespace RC.AutoMapper
             }
 
             var modelContextualizationType = modelContextualization.PropertyType;
-            var modelContextualizationProperties = modelContextualizationType.GetProperties();
+            var modelContextualizationProperties = modelContextualizationType.GetProperties()
+                .Where(property => !property.Name.Equals("Id", StringComparison.OrdinalIgnoreCase)) // By convention, we don't override the Id using the contextualization
+                .ToList();
 
             return modelContextualizationProperties;
         }
