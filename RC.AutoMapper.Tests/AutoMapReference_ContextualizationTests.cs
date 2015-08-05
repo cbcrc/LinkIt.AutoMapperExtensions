@@ -1,3 +1,4 @@
+using System;
 using AutoMapper;
 using NUnit.Framework;
 
@@ -11,8 +12,7 @@ namespace RC.AutoMapper.Tests
         {
             Mapper.CreateMap<MyMediaLinkedSource, MyMediaSummaryDto>()
                 .MapLinkedSource()
-                .ForMember(dto => dto.Id, member => member.MapFrom(source => source.Model.Id))
-                .ForMember(dto => dto.SeekTimeInSec, member => member.MapFrom(source => source.ModelContextualization.SeekTimeInSec));
+                .ForMember(dto => dto.Id, member => member.MapFrom(source => source.Model.Id));
             Mapper.CreateMap<MyComplexLinkedSource, MyComplexDto>()
                 .MapLinkedSource();
         }
@@ -40,7 +40,7 @@ namespace RC.AutoMapper.Tests
                     Id = 1,
                     Title = "The title"
                 },
-                ModelContextualization = new MyMediaContextualization
+                Contextualization = new MyMediaContextualization
                 {
                     Id = 1,
                     SeekTimeInSec = 32,
@@ -50,7 +50,7 @@ namespace RC.AutoMapper.Tests
 
             var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.Title, Is.EqualTo("Overridden title"));
+            Assert.That(actual.Title, Is.EqualTo(linkedSource.Contextualization.Title));
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace RC.AutoMapper.Tests
                     Id = 1,
                     Title = "The title"
                 },
-                ModelContextualization = new MyMediaContextualization
+                Contextualization = new MyMediaContextualization
                 {
                     Id = 1,
                     SeekTimeInSec = 32,
@@ -73,7 +73,7 @@ namespace RC.AutoMapper.Tests
 
             var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.Title, Is.EqualTo("The title"));
+            Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace RC.AutoMapper.Tests
                     Id = 1,
                     Title = "The title"
                 },
-                ModelContextualization = new MyMediaContextualization
+                Contextualization = new MyMediaContextualization
                 {
                     Id = 1,
                     SeekTimeInSec = 32,
@@ -96,7 +96,57 @@ namespace RC.AutoMapper.Tests
 
             var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.SeekTimeInSec, Is.EqualTo(32));
+            Assert.That(actual.SeekTimeInSec, Is.EqualTo(linkedSource.Contextualization.SeekTimeInSec));
+        }
+
+        [Test]
+        public void Map_WithReferenceContextualization_ShouldContextualizeValue()
+        {
+            var linkedSource = new MyMediaLinkedSource
+            {
+                Model = new MyMedia
+                {
+                    Id = 1,
+                    Title = "The title"
+                },
+                Contextualization = new MyMediaContextualization
+                {
+                    Id = 1,
+                    SeekTimeInSec = 32,
+                    Title = "Overridden title",
+                    Image = new Uri("http://www.example.com/contextualized.gif")
+                },
+                Image = new Uri("http://www.example.com/default.gif")
+            };
+
+            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+
+            Assert.That(actual.Image, Is.EqualTo(linkedSource.Contextualization.Image));
+        }
+
+        [Test]
+        public void Map_WithNullReferenceContextualization_ShouldNotContextualizeValue()
+        {
+            var linkedSource = new MyMediaLinkedSource
+            {
+                Model = new MyMedia
+                {
+                    Id = 1,
+                    Title = "The title"
+                },
+                Contextualization = new MyMediaContextualization
+                {
+                    Id = 1,
+                    SeekTimeInSec = 32,
+                    Title = "Overridden title",
+                    Image = null
+                },
+                Image = new Uri("http://www.example.com/default.gif")
+            };
+
+            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+
+            Assert.That(actual.Image, Is.EqualTo(linkedSource.Image));
         }
 
         [Test]
@@ -109,12 +159,12 @@ namespace RC.AutoMapper.Tests
                     Id = 1,
                     Title = "The title"
                 },
-                ModelContextualization = null
+                Contextualization = null
             };
 
             var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.Title, Is.EqualTo("The title"));
+            Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
         }
 
 
@@ -131,7 +181,7 @@ namespace RC.AutoMapper.Tests
                         Id = 1,
                         Title = "The title"
                     },
-                    ModelContextualization = new MyMediaContextualization()
+                    Contextualization = new MyMediaContextualization()
                     {
                         Id = 1,
                         SeekTimeInSec = 32,
@@ -142,14 +192,15 @@ namespace RC.AutoMapper.Tests
 
             var actual = Mapper.Map<MyComplexDto>(linkedSource);
 
-            Assert.That(actual.Media.Title, Is.EqualTo("Overridden title"));
+            Assert.That(actual.Media.Title, Is.EqualTo(linkedSource.Media.Contextualization.Title));
         }
 
 
         public class MyMediaLinkedSource
         {
             public MyMedia Model { get; set; }
-            public MyMediaContextualization ModelContextualization { get; set; }
+            public MyMediaContextualization Contextualization { get; set; }
+            public Uri Image { get; set; }
         }
 
         public class MyMedia
@@ -163,6 +214,7 @@ namespace RC.AutoMapper.Tests
             public int Id { get; set; }
             public string Title { get; set; }
             public int SeekTimeInSec { get; set; }
+            public Uri Image { get; set; }
         }
 
         public class MyMediaSummaryDto
@@ -170,6 +222,7 @@ namespace RC.AutoMapper.Tests
             public int Id { get; set; }
             public string Title { get; set; }
             public int SeekTimeInSec { get; set; }
+            public Uri Image { get; set; }
         }
 
         public class MyComplexLinkedSource
