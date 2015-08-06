@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
 using AutoMapper;
 
 namespace RC.AutoMapper
@@ -24,11 +25,7 @@ namespace RC.AutoMapper
             var referenceProperties = GetReferenceProperties<TLinkedSource>();
             var contextualizationProperties = GetContextualizationProperties<TLinkedSource>();
 
-            var modelPropertiesToMap = modelProperties
-                .Intersect(destinationProperties, propertyNameComparer)
-                .Except(referenceProperties, propertyNameComparer)
-                .Except(contextualizationProperties, propertyNameComparer);
-            MapModelProperties(modelPropertiesToMap, expression);
+            MapModelProperties(expression);
 
             var contextualizedModelPropertiesToMap = modelProperties
                 .Intersect(destinationProperties, propertyNameComparer)
@@ -36,11 +33,11 @@ namespace RC.AutoMapper
                 .Except(referenceProperties, propertyNameComparer);
             MapContextualizedModelProperties(contextualizedModelPropertiesToMap, expression);
 
-            var contextualizationPropertiesToMap = contextualizationProperties
+            var propertiesAddedInContextualization = contextualizationProperties
                 .Intersect(destinationProperties, propertyNameComparer)
                 .Except(referenceProperties, propertyNameComparer)
                 .Except(modelProperties, propertyNameComparer);
-            MapContextualizationProperties(contextualizationPropertiesToMap, expression);
+            MapPropertiesAddedInContextualization(propertiesAddedInContextualization, expression);
 
             var contextualizedReferencePropertiesToMap = contextualizationProperties
                 .Intersect(destinationProperties, propertyNameComparer)
@@ -88,14 +85,17 @@ namespace RC.AutoMapper
                 .ToList();
         }
 
-        private static void MapModelProperties<TLinkedSource, TDestination>(
-            IEnumerable<PropertyInfo> modelProperties,
-            IMappingExpression<TLinkedSource, TDestination> expression)
+        private static void MapModelProperties<TLinkedSource, TDestination>(IMappingExpression<TLinkedSource, TDestination> expression)
         {
-            MapNestedProperties(ModelPropertyName, modelProperties, expression);
+            var modelPropertiesToMap = GetModelProperties<TLinkedSource>()
+                .Intersect(GetDestinationProperties<TDestination>(), new PropertyNameComparer())
+                .Except(GetReferenceProperties<TLinkedSource>(), new PropertyNameComparer())
+                .Except(GetContextualizationProperties<TLinkedSource>(), new PropertyNameComparer());
+
+            MapNestedProperties(ModelPropertyName, modelPropertiesToMap, expression);
         }
 
-        private static void MapContextualizationProperties<TLinkedSource, TDestination>(
+        private static void MapPropertiesAddedInContextualization<TLinkedSource, TDestination>(
             IEnumerable<PropertyInfo> contextualizationPropertiesToMap, 
             IMappingExpression<TLinkedSource, TDestination> expression)
         {
@@ -263,19 +263,6 @@ namespace RC.AutoMapper
                     ),
                     "TLinkedSource"
                     );
-            }
-        }
-
-        public class PropertyNameComparer : IEqualityComparer<PropertyInfo>
-        {
-            public bool Equals(PropertyInfo x, PropertyInfo y)
-            {
-                return x.Name.Equals(y.Name);
-            }
-
-            public int GetHashCode(PropertyInfo obj)
-            {
-                return obj.Name.GetHashCode();
             }
         }
     }
