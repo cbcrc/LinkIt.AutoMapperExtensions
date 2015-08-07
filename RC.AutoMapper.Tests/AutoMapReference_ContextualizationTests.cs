@@ -8,8 +8,7 @@ namespace RC.AutoMapper.Tests
     public class AutoMapReference_ContextualizationTests
     {
         [SetUp]
-        public void SetUp()
-        {
+        public void SetUp() {
             Mapper.CreateMap<MyMediaLinkedSource, MyMediaSummaryDto>()
                 .MapLinkedSource()
                 .ForMember(dto => dto.Id, member => member.MapFrom(source => source.Model.Id));
@@ -18,8 +17,7 @@ namespace RC.AutoMapper.Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
+        public void TearDown() {
             Mapper.Reset();
         }
 
@@ -196,6 +194,59 @@ namespace RC.AutoMapper.Tests
         }
 
 
+
+        [Test]
+        public void Map_ValueTypeContextualizationWithDefault_ShouldUseDefault() {
+            var linkedSource = new MyMediaLinkedSource {
+                Model = new MyMedia {
+                    Id = 1,
+                    Title = "The title",
+                    VolumeLevel = 7,
+                    BassEq = 5
+                },
+                Contextualization = new MyMediaContextualization {
+                    Id = 1,
+                    SeekTimeInSec = 32,
+                    Title = "Overridden title",
+                    Image = null,
+                    VolumeLevel = 0,
+                    BassEq = null
+                },
+                Image = new Uri("http://www.example.com/default.gif")
+            };
+
+            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+
+            Assert.That(actual.VolumeLevel, Is.EqualTo(0));
+            Assert.That(actual.BassEq.Value, Is.EqualTo(5));
+        }
+
+        [Test]
+        public void Map_ValueTypeContextualizationWithOverrides_ShouldContextualize() {
+            var linkedSource = new MyMediaLinkedSource {
+                Model = new MyMedia {
+                    Id = 1,
+                    Title = "The title",
+                    VolumeLevel = 7,
+                    BassEq = 5
+                },
+                Contextualization = new MyMediaContextualization {
+                    Id = 1,
+                    SeekTimeInSec = 32,
+                    Title = "Overridden title",
+                    Image = null,
+                    VolumeLevel = 1,
+                    BassEq = 2
+                },
+                Image = new Uri("http://www.example.com/default.gif")
+            };
+
+            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+
+            Assert.That(actual.VolumeLevel, Is.EqualTo(1));
+            Assert.That(actual.BassEq, Is.EqualTo(2));
+        }
+
         public class MyMediaLinkedSource
         {
             public MyMedia Model { get; set; }
@@ -207,6 +258,8 @@ namespace RC.AutoMapper.Tests
         {
             public int Id { get; set; }
             public string Title { get; set; }
+            public int VolumeLevel { get; set; }
+            public int? BassEq { get; set; }
         }
 
         public class MyMediaContextualization
@@ -214,6 +267,8 @@ namespace RC.AutoMapper.Tests
             public int Id { get; set; }
             public string Title { get; set; }
             public int SeekTimeInSec { get; set; }
+            public int? VolumeLevel { get; set; }
+            public int? BassEq { get; set; }
             public Uri Image { get; set; }
         }
 
@@ -223,6 +278,8 @@ namespace RC.AutoMapper.Tests
             public string Title { get; set; }
             public int SeekTimeInSec { get; set; }
             public Uri Image { get; set; }
+            public int VolumeLevel { get; set; }
+            public int? BassEq { get; set; }
         }
 
         public class MyComplexLinkedSource

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using AutoMapper;
+using AutoMapper.Internal;
 
 namespace RC.AutoMapper
 {
@@ -221,7 +222,16 @@ namespace RC.AutoMapper
             // Create call: Contextualize(root.Contextualization.Property, root.Model.Property)
             var overridingProperty = GenerateGetProperty(root, overridingPropertyInDotNotation);
             var defaultProperty = GenerateGetProperty(root, defaultPropertyInDotNotation);
-            var contextualize = Expression.Call(ThisType, "Contextualize", new[] { typeof(TProperty) }, overridingProperty, defaultProperty);
+
+            var contextualizeFuncName = GetContextualizeFuncNameToCall<TProperty>();
+
+            var contextualize = Expression.Call(
+                ThisType, 
+                contextualizeFuncName, 
+                new[] {typeof (TProperty)},
+                overridingProperty, 
+                defaultProperty
+            );
 
             // Create: root.Contextualization == null ? root.Model.Property : Contextualize(root.Contextualization.Property, root.Model.Property)
             var defaultOrContextualize = Expression.Condition(isContextualizationNull, defaultProperty, contextualize);
@@ -230,10 +240,26 @@ namespace RC.AutoMapper
             return Expression.Lambda<Func<TLinkedSource, object>>(x, root).Compile();
         }
 
-        public static T Contextualize<T>(T overridingValue, T defaultValue) {
-            return Equals(overridingValue, default(T))
+        private static string GetContextualizeFuncNameToCall<TProperty>()
+        {
+            var tProperty = typeof(TProperty);
+
+            if (tProperty.IsValueType && !tProperty.IsNullableType()) { return "ContextualizeValueType"; }
+            return "Contextualize";
+        }
+
+        public static T Contextualize<T>(T overridingValue, T defaultValue)
+        {
+            return overridingValue == null
                 ? defaultValue
                 : overridingValue;
+        }
+
+        public static T ContextualizeValueType<T>(T? overridingValue, T defaultValue) where T:struct
+        {
+            return overridingValue.HasValue==false
+                ? defaultValue
+                : overridingValue.Value;
         }
         #endregion
 
