@@ -56,7 +56,6 @@
     <Compile Include="AutoMapReference_CustomMappingTests.cs" />
     <Compile Include="AutoMapReference_PolymorphismTests.cs" />
     <Compile Include="AutoMapReference_PreconditionsTests.cs" />
-    <Compile Include="CallFuncExpressionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
