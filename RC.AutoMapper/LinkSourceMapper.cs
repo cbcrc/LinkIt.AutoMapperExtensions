@@ -236,8 +236,9 @@ namespace RC.AutoMapper
             // Create: root.Contextualization == null ? root.Model.Property : Contextualize(root.Contextualization.Property, root.Model.Property)
             var defaultOrContextualize = Expression.Condition(isContextualizationNull, defaultProperty, contextualize);
 
-            var x = Expression.Convert(defaultOrContextualize, typeof(object));
-            return Expression.Lambda<Func<TLinkedSource, object>>(x, root).Compile();
+            // AutoMapper seems to require this explicit cast
+            var withCastedResult = Expression.Convert(defaultOrContextualize, typeof(object));
+            return Expression.Lambda<Func<TLinkedSource, object>>(withCastedResult, root).Compile();
         }
 
         private static string GetContextualizeFuncNameToCall<TProperty>()
