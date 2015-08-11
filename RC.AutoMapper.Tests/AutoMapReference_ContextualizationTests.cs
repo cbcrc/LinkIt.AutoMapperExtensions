@@ -98,56 +98,6 @@ namespace RC.AutoMapper.Tests
         }
 
         [Test]
-        public void Map_WithReferenceContextualization_ShouldContextualizeValue()
-        {
-            var linkedSource = new MyMediaLinkedSource
-            {
-                Model = new MyMedia
-                {
-                    Id = 1,
-                    Title = "The title"
-                },
-                Contextualization = new MyMediaContextualization
-                {
-                    Id = 1,
-                    SeekTimeInSec = 32,
-                    Title = "Overridden title",
-                    Image = new Uri("http://www.example.com/contextualized.gif")
-                },
-                Image = new Uri("http://www.example.com/default.gif")
-            };
-
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
-
-            Assert.That(actual.Image, Is.EqualTo(linkedSource.Contextualization.Image));
-        }
-
-        [Test]
-        public void Map_WithNullReferenceContextualization_ShouldNotContextualizeValue()
-        {
-            var linkedSource = new MyMediaLinkedSource
-            {
-                Model = new MyMedia
-                {
-                    Id = 1,
-                    Title = "The title"
-                },
-                Contextualization = new MyMediaContextualization
-                {
-                    Id = 1,
-                    SeekTimeInSec = 32,
-                    Title = "Overridden title",
-                    Image = null
-                },
-                Image = new Uri("http://www.example.com/default.gif")
-            };
-
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
-
-            Assert.That(actual.Image, Is.EqualTo(linkedSource.Image));
-        }
-
-        [Test]
         public void Map_WithNullContextualization_ShouldNotContextualizeValue()
         {
             var linkedSource = new MyMediaLinkedSource

@@ -103,7 +103,6 @@ namespace RC.AutoMapper
             MapModelProperties(expression);
             MapContextualizedModelProperties(expression);
             MapPropertiesAddedInContextualization(expression);
-            MapContextualizedReferenceProperties(expression);
 
             return expression;
         }
@@ -124,7 +123,7 @@ namespace RC.AutoMapper
                 .Intersect(ContextualizationProperties, PropertyNameComparer)
                 .Except(ReferenceProperties, PropertyNameComparer);
 
-            MapContextualizedProperties(ModelPropertyName, contextualizedModelPropertiesToMap, expression);
+            MapContextualizedProperties(contextualizedModelPropertiesToMap, expression);
         }
 
         private void MapPropertiesAddedInContextualization(IMappingExpression<TLinkedSource, TDestination> expression) {
@@ -134,14 +133,6 @@ namespace RC.AutoMapper
                 .Except(ModelProperties, PropertyNameComparer);
 
             MapNestedProperties(ContextualizationPropertyName, propertiesAddedInContextualization, expression);
-        }
-
-        private void MapContextualizedReferenceProperties(IMappingExpression<TLinkedSource, TDestination> expression) {
-            var contextualizedReferencePropertiesToMap = ContextualizationProperties
-                .Intersect(DestinationProperties, PropertyNameComparer)
-                .Intersect(ReferenceProperties, PropertyNameComparer);
-
-            MapContextualizedProperties(null, contextualizedReferencePropertiesToMap, expression);
         }
 
         #region MapNestedProperties
@@ -182,12 +173,11 @@ namespace RC.AutoMapper
 
         #region MapContextualizedProperties
         private static void MapContextualizedProperties(
-            string defaultPropertiesPrefix,
             IEnumerable<PropertyInfo> contextualizedProperties,
             IMappingExpression<TLinkedSource, TDestination> expression) {
             foreach (var property in contextualizedProperties) {
                 var overridingPropertyInDotNotation = string.Format("{0}.{1}", ContextualizationPropertyName, property.Name);
-                var defaultPropertyInDotNotation = defaultPropertiesPrefix == null ? property.Name : string.Format("{0}.{1}", defaultPropertiesPrefix, property.Name);
+                var defaultPropertyInDotNotation = string.Format("{0}.{1}", ModelPropertyName, property.Name);
 
                 var method = ThisType.GetMethod("MapContextualizedProperty");
                 var genericMethod = method.MakeGenericMethod(property.PropertyType);
