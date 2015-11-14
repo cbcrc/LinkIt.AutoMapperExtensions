@@ -10,13 +10,20 @@ namespace RC.AutoMapper.Tests
         public void SetUp()
         {
             Mapper.CreateMap<PolymorphicModel, PolymorphicDto>();
+
+            Mapper.CreateMap<PolymorphicValueA, PolymorphicValueADto>();
+            Mapper.CreateMap<PolymorphicValueB, PolymorphicValueBDto>();
+            Mapper.CreateMap<PolymorphicValueC, PolymorphicValueCDto>()
+                .ForMember(dto => dto.Y, member => member.ResolveUsing(source => source.Y + "-custom"));
+
+
             Mapper.CreateMap<IPolymorphicValue, IPolymorphicValueDto>()
                 .Include<PolymorphicValueA, PolymorphicValueADto>()
                 .Include<PolymorphicValueB, PolymorphicValueBDto>()
                 .Include<PolymorphicValueC, PolymorphicValueCDto>();
 
-            Mapper.CreateMap<PolymorphicValueC, PolymorphicValueCDto>()
-                .ForMember(dto => dto.Y, member => member.ResolveUsing(source => source.Y + "-custom"));
+            Mapper.Configuration.Seal();
+
         }
 
         [TearDown]
