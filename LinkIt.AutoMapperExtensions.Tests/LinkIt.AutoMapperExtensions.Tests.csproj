@@ -57,7 +57,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RC.AutoMapper\LinkIt.AutoMapperExtensions.csproj">
+    <ProjectReference Include="..\LinkIt.AutoMapperExtensions\LinkIt.AutoMapperExtensions.csproj">
       <Project>{ac76e33e-4fda-4cb2-81e5-347dc7550c8f}</Project>
       <Name>LinkIt.AutoMapperExtensions</Name>
     </ProjectReference>
