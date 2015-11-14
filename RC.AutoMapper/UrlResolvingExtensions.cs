@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoMapper;
-using RC.AutoMapper.UrlTemplates;
+using LinkIt.AutoMapperExtensions.UrlTemplates;
 
-namespace RC.AutoMapper
+namespace LinkIt.AutoMapperExtensions
 {
     public static class UrlResolvingExtensions
     {

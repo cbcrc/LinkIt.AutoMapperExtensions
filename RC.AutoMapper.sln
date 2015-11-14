@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.AutoMapper", "RC.AutoMapper\RC.AutoMapper.csproj", "{AC76E33E-4FDA-4CB2-81E5-347DC7550C8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkIt.AutoMapperExtensions", "RC.AutoMapper\LinkIt.AutoMapperExtensions.csproj", "{AC76E33E-4FDA-4CB2-81E5-347DC7550C8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.AutoMapper.Tests", "RC.AutoMapper.Tests\RC.AutoMapper.Tests.csproj", "{9827C582-A814-4167-84BA-6E2DF6DFADBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkIt.AutoMapperExtensions.Tests", "RC.AutoMapper.Tests\LinkIt.AutoMapperExtensions.Tests.csproj", "{9827C582-A814-4167-84BA-6E2DF6DFADBF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F3230FC-9BF9-460E-ACD1-D17E30FC0B85}"
 	ProjectSection(SolutionItems) = preProject

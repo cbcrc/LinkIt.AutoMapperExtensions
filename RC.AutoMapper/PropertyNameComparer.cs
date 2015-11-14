@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace RC.AutoMapper
+namespace LinkIt.AutoMapperExtensions
 {
     public class PropertyNameComparer : IEqualityComparer<PropertyInfo> {
         public bool Equals(PropertyInfo x, PropertyInfo y) {

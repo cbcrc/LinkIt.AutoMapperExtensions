@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Tavis.UriTemplates;
 
-namespace RC.AutoMapper.UrlTemplates
+namespace LinkIt.AutoMapperExtensions.UrlTemplates
 {
     public class UrlTemplate
     {

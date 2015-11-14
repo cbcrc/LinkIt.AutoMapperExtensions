@@ -2,7 +2,7 @@ using System;
 using AutoMapper;
 using NUnit.Framework;
 
-namespace RC.AutoMapper.Tests
+namespace LinkIt.AutoMapperExtensions.Tests
 {
     [TestFixture]
     public class AutoMapReference_PreconditionsTests 

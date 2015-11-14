@@ -6,7 +6,7 @@ using System.Reflection;
 using AutoMapper;
 using AutoMapper.Internal;
 
-namespace RC.AutoMapper
+namespace LinkIt.AutoMapperExtensions
 {
     public class LinkSourceMapper<TLinkedSource, TDestination>
     {

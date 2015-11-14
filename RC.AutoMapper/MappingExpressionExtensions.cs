@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace RC.AutoMapper
+namespace LinkIt.AutoMapperExtensions
 {
     public static class MappingExpressionExtensions
     {
