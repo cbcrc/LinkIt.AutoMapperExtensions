@@ -75,6 +75,25 @@ namespace LinkIt.AutoMapperExtensions.Tests
         }
 
         [Test]
+        public void Map_WithEmtpyOrWhitespaceStringValueInContextualization_ShouldNotContextualizeValue() {
+            var linkedSource = new MyMediaLinkedSource {
+                Model = new MyMedia {
+                    Id = 1,
+                    Title = "The title"
+                },
+                Contextualization = new MyMediaContextualization {
+                    Id = 1,
+                    SeekTimeInSec = 32,
+                    Title = " "
+                }
+            };
+
+            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+
+            Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
+        }
+
+        [Test]
         public void Map_WithAdditionInContextualization_ShouldMapAddition()
         {
             var linkedSource = new MyMediaLinkedSource
