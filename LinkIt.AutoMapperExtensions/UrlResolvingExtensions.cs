@@ -7,7 +7,7 @@ namespace LinkIt.AutoMapperExtensions
 {
     public static class UrlResolvingExtensions
     {
-        public static void ResolveUrl<TSource>(this IMemberConfigurationExpression<TSource> member, string webApiRouteTemplate, Func<TSource, int?> id)
+        public static void ResolveUrl<TSource>(this IMemberConfigurationExpression<TSource> member, string webApiRouteTemplate, Func<TSource, object> id)
         {
             member.ResolveUsing(source => new UrlTemplate(webApiRouteTemplate, id(source)).Resolve());
         }

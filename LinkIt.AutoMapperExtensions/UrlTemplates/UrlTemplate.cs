@@ -28,7 +28,7 @@ namespace LinkIt.AutoMapperExtensions.UrlTemplates
         private readonly string _webApiRouteTemplate;
         private readonly IDictionary<string, object> _urlParameters;
 
-        public UrlTemplate(string webApiRouteTemplate, int? id)
+        public UrlTemplate(string webApiRouteTemplate, object id)
         {
             _webApiRouteTemplate = webApiRouteTemplate;
             _urlParameters = new Dictionary<string, object> { { "id", id } };
@@ -82,7 +82,7 @@ namespace LinkIt.AutoMapperExtensions.UrlTemplates
             
             // Compromise for backward-compatibility
             var id = _urlParameters["id"] as int?;
-            if (id.Value == default(int))
+            if (id != null && id.Value == default(int))
             {
                 return true;
             }
