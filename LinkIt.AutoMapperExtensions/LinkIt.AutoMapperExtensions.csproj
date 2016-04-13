@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\IConfigurationExtensions.cs" />
+    <Compile Include="Config\IAbstractTransformConfig.cs" />
     <Compile Include="Config\ITransformConfig.cs" />
     <Compile Include="LinkSourceMapper.cs" />
     <Compile Include="MappingExpressionExtensions.cs" />

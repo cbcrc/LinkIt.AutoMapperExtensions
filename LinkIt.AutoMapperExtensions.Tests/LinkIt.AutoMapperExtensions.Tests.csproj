@@ -57,6 +57,7 @@
     <Compile Include="AutoMapReference_PolymorphismTests.cs" />
     <Compile Include="AutoMapReference_PreconditionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IConfigurationExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
