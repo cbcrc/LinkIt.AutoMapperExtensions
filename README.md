@@ -1,9 +1,8 @@
-LinkIt extensions for AutoMapper
+<img style="float: left;" src="logo.png">
+extensions for AutoMapper
 ===============
 
 LinkIt extensions for [AutoMapper](http://automapper.org/) can be used to map linked sources to DTOs by conventions.
-
-Here is how how the [LinkIt samples](todo) can be mapped to DTOs seamlessly.
 
 Getting started
 ---------------
