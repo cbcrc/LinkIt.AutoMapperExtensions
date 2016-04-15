@@ -1,5 +1,4 @@
-<img style="float: left;" src="logo.png">
-extensions for AutoMapper
+<div><img style="float: left;" src="logo.png"> AutoMapper Extensions</div>
 ===============
 
 LinkIt extensions for [AutoMapper](http://automapper.org/) can be used to map linked sources to DTOs by conventions.
