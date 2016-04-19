@@ -69,3 +69,4 @@ We are done, we can leverage [AutoMapper](http://automapper.org/) to perform com
 
 ### Read more
 - [Slightly more complex example](slightly-more-complex-example.md)
+- [License](LICENSE.txt)
