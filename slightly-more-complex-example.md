@@ -98,3 +98,6 @@ Mapper.CreateMap<object, Dtos.v1.Interfaces.IMultimediaContentDto>()
     .Include<Image, ImageDto>()
     .Include<MediaLinkedSource, MediaDto>()
 ```
+
+### See also
+- [LinkIt](https://github.com/cbcrc/LinkIt)
