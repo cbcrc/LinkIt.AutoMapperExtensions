@@ -50,6 +50,7 @@
     <Compile Include="Config\IConfigurationExtensions.cs" />
     <Compile Include="Config\IAbstractTransformConfig.cs" />
     <Compile Include="Config\ITransformConfig.cs" />
+    <Compile Include="OverrideConvention.cs" />
     <Compile Include="LinkSourceMapper.cs" />
     <Compile Include="MappingExpressionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

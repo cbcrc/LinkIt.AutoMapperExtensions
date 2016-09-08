@@ -246,26 +246,16 @@ namespace LinkIt.AutoMapperExtensions
 
         public static T Contextualize<T>(T overridingValue, T defaultValue)
         {
-            return IsOverridden(overridingValue)
-                ? defaultValue
-                : overridingValue;
-        }
-
-        private static bool IsOverridden<T>(T overridingValue)
-        {
-            if (typeof(T) == typeof(string)){
-                var asString = (string)(object)overridingValue;
-                return string.IsNullOrWhiteSpace(asString);
-            }
-
-            return overridingValue == null;
+            return OverrideConvention.IsOverridden(overridingValue)
+                ? overridingValue
+                : defaultValue;
         }
 
         public static T ContextualizeValueType<T>(T? overridingValue, T defaultValue) where T:struct
         {
-            return overridingValue.HasValue==false
-                ? defaultValue
-                : overridingValue.Value;
+            return OverrideConvention.IsOverridden(overridingValue)
+                ? overridingValue.Value
+                : defaultValue;
         }
         #endregion
 
