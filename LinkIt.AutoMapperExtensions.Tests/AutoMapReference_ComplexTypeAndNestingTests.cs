@@ -9,28 +9,28 @@ using NUnit.Framework;
 namespace LinkIt.AutoMapperExtensions.Tests
 {
     [TestFixture]
-    public class AutoMapReference_ComplexTypeAndNestingTests {
+    public class AutoMapReference_ComplexTypeAndNestingTests
+    {
+        private MapperConfiguration _config;
+        private IMapper _mapper;
 
         [SetUp]
         public void SetUp()
         {
-            Mapper
-                .CreateMap<NestedLinkedSource, MyComplexDto>()
-                .MapLinkedSource();
-            Mapper.CreateMap<MyPoint, MyPointDto>();
-            Mapper.CreateMap<ListOfNestedLinkedSource, ListOfMyComplexDto>();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Mapper.Reset();
+            _config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<NestedLinkedSource, MyComplexDto>()
+                    .MapLinkedSource();
+                cfg.CreateMap<MyPoint, MyPointDto>();
+                cfg.CreateMap<ListOfNestedLinkedSource, ListOfMyComplexDto>();
+            });
+            _mapper = _config.CreateMapper();
         }
 
         [Test]
         public void AssertConfigurationIsValid()
         {
-            Mapper.AssertConfigurationIsValid();
+            _config.AssertConfigurationIsValid();
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 Child = null
             };
                 
-            var actual = Mapper.Map<MyComplexDto>(source);
+            var actual = _mapper.Map<MyComplexDto>(source);
 
             Assert.That(actual.Id, Is.EqualTo(source.Model.Id));
             Assert.That(actual.Title, Is.EqualTo(source.Model.Title));
@@ -64,7 +64,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<MyComplexDto>(source);
+            var actual = _mapper.Map<MyComplexDto>(source);
 
             Assert.That(actual.Id, Is.EqualTo(source.Model.Id));
             Assert.That(actual.Title, Is.EqualTo(source.Model.Title));
@@ -96,7 +96,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }                
             };
 
-            var actual = Mapper.Map<MyComplexDto[]>(source);
+            var actual = _mapper.Map<MyComplexDto[]>(source);
 
             Assert.That(actual[0].Id, Is.EqualTo(source[0].Model.Id));
             Assert.That(actual[0].Title, Is.EqualTo(source[0].Model.Title));
@@ -127,7 +127,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<ListOfMyComplexDto>(source);
+            var actual = _mapper.Map<ListOfMyComplexDto>(source);
 
             Assert.That(actual.Items[0].Id, Is.EqualTo(source.Items[0].Model.Id));
             Assert.That(actual.Items[0].Title, Is.EqualTo(source.Items[0].Model.Title));

@@ -9,6 +9,6 @@ namespace LinkIt.AutoMapperExtensions.Config
 {
     public interface ITransformConfig
     {
-        void ConfigureTransformation(IConfiguration config);
+        void ConfigureTransformation(IMapperConfigurationExpression config);
     }
 }

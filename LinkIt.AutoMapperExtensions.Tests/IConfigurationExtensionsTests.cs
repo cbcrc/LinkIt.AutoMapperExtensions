@@ -5,6 +5,7 @@
 
 using System;
 using AutoMapper;
+using AutoMapper.Configuration;
 using LinkIt.AutoMapperExtensions.Config;
 using NUnit.Framework;
 
@@ -52,7 +53,7 @@ namespace LinkIt.AutoMapperExtensions.Tests {
 
         public class BBeforeA_IInterfaceConfig : IAbstractTransformConfig
         {
-            public void ConfigureTransformation(IConfiguration config)
+            public void ConfigureTransformation(IMapperConfigurationExpression config)
             {
                 config.CreateMap<IModel, IDto>()
                     .Include<Model, Dto>()
@@ -64,7 +65,7 @@ namespace LinkIt.AutoMapperExtensions.Tests {
         }
 
         public class ABeforeB_ModelConfig : ITransformConfig {
-            public void ConfigureTransformation(IConfiguration config) {
+            public void ConfigureTransformation(IMapperConfigurationExpression config) {
                 config.CreateMap<Model, Dto>()
                     .ForMember(
                             dto => dto.FromModel,

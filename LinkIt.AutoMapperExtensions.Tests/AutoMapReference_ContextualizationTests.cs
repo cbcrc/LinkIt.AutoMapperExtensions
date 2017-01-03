@@ -12,24 +12,27 @@ namespace LinkIt.AutoMapperExtensions.Tests
     [TestFixture]
     public class AutoMapReference_ContextualizationTests
     {
-        [SetUp]
-        public void SetUp() {
-            Mapper.CreateMap<MyMediaLinkedSource, MyMediaSummaryDto>()
-                .MapLinkedSource()
-                .ForMember(dto => dto.Id, member => member.MapFrom(source => source.Model.Id));
-            Mapper.CreateMap<MyComplexLinkedSource, MyComplexDto>()
-                .MapLinkedSource();
-        }
+        private MapperConfiguration _config;
+        private IMapper _mapper;
 
-        [TearDown]
-        public void TearDown() {
-            Mapper.Reset();
+        [SetUp]
+        public void SetUp()
+        {
+            _config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<MyMediaLinkedSource, MyMediaSummaryDto>()
+                    .MapLinkedSource()
+                    .ForMember(dto => dto.Id, member => member.MapFrom(source => source.Model.Id));
+                cfg.CreateMap<MyComplexLinkedSource, MyComplexDto>()
+                    .MapLinkedSource();
+            });
+            _mapper = _config.CreateMapper();
         }
 
         [Test]
         public void AssertConfigurationIsValid()
         {
-            Mapper.AssertConfigurationIsValid();
+            _config.AssertConfigurationIsValid();
         }
 
 
@@ -51,7 +54,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+            var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
             Assert.That(actual.Title, Is.EqualTo(linkedSource.Contextualization.Title));
         }
@@ -74,7 +77,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+            var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
             Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
         }
@@ -93,7 +96,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+            var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
             Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
         }
@@ -116,7 +119,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+            var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
             Assert.That(actual.SeekTimeInSec, Is.EqualTo(linkedSource.Contextualization.SeekTimeInSec));
         }
@@ -134,7 +137,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 Contextualization = null
             };
 
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+            var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
             Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
         }
@@ -162,7 +165,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<MyComplexDto>(linkedSource);
+            var actual = _mapper.Map<MyComplexDto>(linkedSource);
 
             Assert.That(actual.Media.Title, Is.EqualTo(linkedSource.Media.Contextualization.Title));
         }
@@ -189,7 +192,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 Image = new Uri("http://www.example.com/default.gif")
             };
 
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+            var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
             Assert.That(actual.VolumeLevel, Is.EqualTo(0));
             Assert.That(actual.BassEq.Value, Is.EqualTo(5));
@@ -215,7 +218,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 Image = new Uri("http://www.example.com/default.gif")
             };
 
-            var actual = Mapper.Map<MyMediaSummaryDto>(linkedSource);
+            var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
             Assert.That(actual.VolumeLevel, Is.EqualTo(1));
             Assert.That(actual.BassEq, Is.EqualTo(2));

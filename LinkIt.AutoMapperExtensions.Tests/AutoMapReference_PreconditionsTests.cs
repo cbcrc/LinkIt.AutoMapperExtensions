@@ -12,29 +12,29 @@ namespace LinkIt.AutoMapperExtensions.Tests
     [TestFixture]
     public class AutoMapReference_PreconditionsTests 
     {
-        [TearDown]
-        public void TearDown()
-        {
-            Mapper.Reset();
-        }
-
         [Test]
         public void MapModel_WithoutModelProperty_ShouldThrowArgumentException()
         {
-            Assert.Throws<ArgumentException>(()=>            
-                Mapper
-                .CreateMap<WannaBeLinkedSource, string>()
-                .MapLinkedSource()
-            );
+            Assert.Throws<ArgumentException>(() =>
+            {
+                new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<WannaBeLinkedSource, string>()
+                        .MapLinkedSource();
+                });
+            });
         }
 
         [Test]
         public void MapModel_WithPrimitiveModel_ShouldThrowArgumentException() {
             Assert.Throws<ArgumentException>(() =>
-                Mapper
-                .CreateMap<PrimitiveLinkedSource, string>()
-                .MapLinkedSource()
-            );
+            {
+                new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<PrimitiveLinkedSource, string>()
+                        .MapLinkedSource();
+                });
+            });
         }
 
 

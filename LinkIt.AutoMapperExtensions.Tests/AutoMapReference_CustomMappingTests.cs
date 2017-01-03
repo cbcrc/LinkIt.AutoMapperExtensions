@@ -11,28 +11,25 @@ namespace LinkIt.AutoMapperExtensions.Tests
     [TestFixture]
     public class AutoMapReference_CustomMappingTests
     {
-        [TearDown]
-        public void TearDown()
-        {
-            Mapper.Reset();
-        }
-
         [Test]
         public void MapModel_WithCustomMappingForOtherProperty_ShouldMap()
         {
-            Mapper
-                .CreateMap<MyCustomLinkedSource, MyCustomDto>()
-                .MapLinkedSource()
-                .ForMember(destination => destination.SelfUrl, opt => opt.MapFrom(src => "http://blah.com/" + src.Model.Id));
-
-            Mapper.AssertConfigurationIsValid();
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg
+                    .CreateMap<MyCustomLinkedSource, MyCustomDto>()
+                    .MapLinkedSource()
+                    .ForMember(destination => destination.SelfUrl, opt => opt.MapFrom(src => "http://blah.com/" + src.Model.Id));
+            });
+            config.AssertConfigurationIsValid();
+            var mapper = config.CreateMapper();
 
             var source = new MyCustomLinkedSource
             {
                 Model = CreateMyCustomModel(1),
             };
                 
-            var actual = Mapper.Map<MyCustomDto>(source);
+            var actual = mapper.Map<MyCustomDto>(source);
 
             Assert.That(actual.SelfUrl, Is.EqualTo("http://blah.com/" + source.Model.Id));
         }
@@ -40,20 +37,23 @@ namespace LinkIt.AutoMapperExtensions.Tests
         [Test]
         public void MapModel_WithCustomMappingForModelProperty_ShouldMap()
         {
-            Mapper
-                .CreateMap<MyCustomLinkedSource, MyCustomDto>()
-                .MapLinkedSource()
-                .ForMember(destination => destination.Title, opt => opt.MapFrom(src => src.Model.Title + " TEST"))
-                .ForMember(destination => destination.SelfUrl, opt => opt.Ignore());
-
-            Mapper.AssertConfigurationIsValid();
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg
+                    .CreateMap<MyCustomLinkedSource, MyCustomDto>()
+                    .MapLinkedSource()
+                    .ForMember(destination => destination.Title, opt => opt.MapFrom(src => src.Model.Title + " TEST"))
+                    .ForMember(destination => destination.SelfUrl, opt => opt.Ignore());
+            });
+            config.AssertConfigurationIsValid();
+            var mapper = config.CreateMapper();
 
             var source = new MyCustomLinkedSource
             {
                 Model = CreateMyCustomModel(1),
             };
 
-            var actual = Mapper.Map<MyCustomDto>(source);
+            var actual = mapper.Map<MyCustomDto>(source);
 
             Assert.That(actual.Title, Is.EqualTo(source.Model.Title + " TEST"));
         }

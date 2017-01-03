@@ -9,7 +9,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using AutoMapper;
-using AutoMapper.Internal;
 
 namespace LinkIt.AutoMapperExtensions
 {
@@ -205,7 +204,7 @@ namespace LinkIt.AutoMapperExtensions
             expression.ForMember(destinationPropertyName, opt => opt.ResolveUsing(contextualizationFunc));
         }
 
-        private static Func<TLinkedSource, object> CreateContextualizationFunc<TProperty>(string overridingPropertyInDotNotation, string defaultPropertyInDotNotation) {
+        private static Func<TLinkedSource, TProperty> CreateContextualizationFunc<TProperty>(string overridingPropertyInDotNotation, string defaultPropertyInDotNotation) {
             var root = Expression.Parameter(typeof(TLinkedSource), "root");
 
             var contextualizationProperty = GenerateGetProperty(root, ContextualizationPropertyName);
@@ -230,18 +229,21 @@ namespace LinkIt.AutoMapperExtensions
 
             // Create: root.Contextualization == null ? root.Model.Property : Contextualize(root.Contextualization.Property, root.Model.Property)
             var defaultOrContextualize = Expression.Condition(isContextualizationNull, defaultProperty, contextualize);
-
-            // AutoMapper seems to require this explicit cast
-            var withCastedResult = Expression.Convert(defaultOrContextualize, typeof(object));
-            return Expression.Lambda<Func<TLinkedSource, object>>(withCastedResult, root).Compile();
+            
+            return Expression.Lambda<Func<TLinkedSource, TProperty>>(defaultOrContextualize, root).Compile();
         }
 
         private static string GetContextualizeFuncNameToCall<TProperty>()
         {
             var tProperty = typeof(TProperty);
 
-            if (tProperty.IsValueType && !tProperty.IsNullableType()) { return "ContextualizeValueType"; }
+            if (tProperty.IsValueType && !IsNullableType(tProperty)) { return "ContextualizeValueType"; }
             return "Contextualize";
+        }
+
+        private static bool IsNullableType(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         public static T Contextualize<T>(T overridingValue, T defaultValue)

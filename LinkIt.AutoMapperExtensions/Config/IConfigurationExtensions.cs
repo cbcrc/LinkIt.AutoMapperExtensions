@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AutoMapper;
@@ -12,9 +11,16 @@ using AutoMapper;
 namespace LinkIt.AutoMapperExtensions.Config {
     public static class IConfigurationExtensions {
 
-        public static void ApplyTransformConfigs(this IConfiguration config, IEnumerable<Assembly> assemblies) {
-            if (config == null) { throw new ArgumentNullException("config"); }
-            if (assemblies == null) { throw new ArgumentNullException("assemblies"); }
+        public static void ApplyTransformConfigs(this IMapperConfigurationExpression config, params Type[] typesToScanAssemblies)
+        {
+            if (typesToScanAssemblies == null) { throw new ArgumentNullException(nameof(typesToScanAssemblies)); }
+
+            ApplyTransformConfigs(config, typesToScanAssemblies.Select(t => t.Assembly).ToArray());
+        }
+
+        public static void ApplyTransformConfigs(this IMapperConfigurationExpression config, params Assembly[] assemblies) {
+            if (config == null) { throw new ArgumentNullException(nameof(config)); }
+            if (assemblies == null) { throw new ArgumentNullException(nameof(assemblies)); }
 
             var transformConfigTypes = assemblies
                 .SelectMany(assembly => assembly.GetTypes())

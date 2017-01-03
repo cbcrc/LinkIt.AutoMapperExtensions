@@ -11,38 +11,36 @@ namespace LinkIt.AutoMapperExtensions.Tests
     [TestFixture]
     public class AutoMapReference_PolymorphismTests
     {
+        private MapperConfiguration _config;
+        private IMapper _mapper;
+
         [SetUp]
         public void SetUp()
         {
-            Mapper.CreateMap<PolymorphicModel, PolymorphicDto>();
+            _config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<PolymorphicModel, PolymorphicDto>();
 
-            Mapper.CreateMap<PolymorphicValueA, PolymorphicValueADto>();
-            Mapper.CreateMap<PolymorphicValueB, PolymorphicValueBDto>();
-            Mapper.CreateMap<PolymorphicValueC, PolymorphicValueCDto>()
-                .ForMember(dto => dto.Y, member => member.ResolveUsing(source => source.Y + "-custom"));
+                cfg.CreateMap<PolymorphicValueA, PolymorphicValueADto>();
+                cfg.CreateMap<PolymorphicValueB, PolymorphicValueBDto>();
+                cfg.CreateMap<PolymorphicValueC, PolymorphicValueCDto>()
+                    .ForMember(dto => dto.Y, member => member.ResolveUsing(source => source.Y + "-custom"));
 
 
-            Mapper.CreateMap<IPolymorphicValue, IPolymorphicValueDto>()
-                .Include<PolymorphicValueA, PolymorphicValueADto>()
-                .Include<PolymorphicValueB, PolymorphicValueBDto>()
-                .Include<PolymorphicValueC, PolymorphicValueCDto>();
-
-            Mapper.Configuration.Seal();
-
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Mapper.Reset();
+                cfg.CreateMap<IPolymorphicValue, IPolymorphicValueDto>()
+                    .Include<PolymorphicValueA, PolymorphicValueADto>()
+                    .Include<PolymorphicValueB, PolymorphicValueBDto>()
+                    .Include<PolymorphicValueC, PolymorphicValueCDto>();
+            });
+            _mapper = _config.CreateMapper();
         }
 
         [Test]
         public void AssertConfigurationIsValid()
         {
-            Mapper.AssertConfigurationIsValid();
+            _config.AssertConfigurationIsValid();
         }
-        
+
 
         [Test]
         public void Map_WithPolymorphicValueA_ShouldMapPolymorphicValueADto()
@@ -56,7 +54,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<PolymorphicDto>(source);
+            var actual = _mapper.Map<PolymorphicDto>(source);
 
             var asPolymorphicValueADto = actual.MyValue as PolymorphicValueADto;
             Assert.That(asPolymorphicValueADto, Is.Not.Null);
@@ -73,7 +71,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<PolymorphicDto>(source);
+            var actual = _mapper.Map<PolymorphicDto>(source);
 
             var asPolymorphicValueBDto = actual.MyValue as PolymorphicValueBDto;
             Assert.That(asPolymorphicValueBDto, Is.Not.Null);
@@ -89,7 +87,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 }
             };
 
-            var actual = Mapper.Map<PolymorphicDto>(source);
+            var actual = _mapper.Map<PolymorphicDto>(source);
 
             var asPolymorphicValueCDto = actual.MyValue as PolymorphicValueCDto;
             Assert.That(asPolymorphicValueCDto, Is.Not.Null);
