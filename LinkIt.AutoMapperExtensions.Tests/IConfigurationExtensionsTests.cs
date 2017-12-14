@@ -5,14 +5,12 @@
 
 using System;
 using AutoMapper;
-using AutoMapper.Configuration;
 using LinkIt.AutoMapperExtensions.Config;
-using NUnit.Framework;
+using Xunit;
 
 namespace LinkIt.AutoMapperExtensions.Tests {
-    [TestFixture]
     public class IConfigurationExtensionsTests {
-        [Test]
+        [Fact]
         public void Initialize_WithAbstractTransformConfig_ShouldInitializedAbstractTransformConfigFirst() {
             Mapper.Initialize(
                 configuration => configuration.ApplyTransformConfigs(
@@ -28,8 +26,8 @@ namespace LinkIt.AutoMapperExtensions.Tests {
             };
             var actual = Mapper.Map<Dto>(source);
 
-            Assert.That(actual.FromInterface.ToString(), Is.EqualTo("http://from-interface.com/index.html"));
-            Assert.That(actual.FromModel.ToString(), Is.EqualTo("http://from-model.com/index.html"));
+            Assert.Equal("http://from-interface.com/index.html", actual.FromInterface.ToString());
+            Assert.Equal("http://from-model.com/index.html", actual.FromModel.ToString());
         }
 
         public interface IDto

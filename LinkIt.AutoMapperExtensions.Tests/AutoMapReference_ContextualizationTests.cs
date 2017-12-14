@@ -5,18 +5,16 @@
 
 using System;
 using AutoMapper;
-using NUnit.Framework;
+using Xunit;
 
 namespace LinkIt.AutoMapperExtensions.Tests
 {
-    [TestFixture]
     public class AutoMapReference_ContextualizationTests
     {
         private MapperConfiguration _config;
         private IMapper _mapper;
-
-        [SetUp]
-        public void SetUp()
+        
+        public AutoMapReference_ContextualizationTests()
         {
             _config = new MapperConfiguration(cfg =>
             {
@@ -29,14 +27,14 @@ namespace LinkIt.AutoMapperExtensions.Tests
             _mapper = _config.CreateMapper();
         }
 
-        [Test]
+        [Fact]
         public void AssertConfigurationIsValid()
         {
             _config.AssertConfigurationIsValid();
         }
 
 
-        [Test]
+        [Fact]
         public void Map_WithValueContextualization_ShouldContextualizeValue()
         {
             var linkedSource = new MyMediaLinkedSource
@@ -56,10 +54,10 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.Title, Is.EqualTo(linkedSource.Contextualization.Title));
+            Assert.Equal(linkedSource.Contextualization.Title, actual.Title);
         }
 
-        [Test]
+        [Fact]
         public void Map_WithNullValueInContextualization_ShouldNotContextualizeValue()
         {
             var linkedSource = new MyMediaLinkedSource
@@ -79,10 +77,10 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
+            Assert.Equal(linkedSource.Model.Title, actual.Title);
         }
 
-        [Test]
+        [Fact]
         public void Map_WithEmtpyOrWhitespaceStringValueInContextualization_ShouldNotContextualizeValue() {
             var linkedSource = new MyMediaLinkedSource {
                 Model = new MyMedia {
@@ -98,10 +96,10 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
+            Assert.Equal(linkedSource.Model.Title, actual.Title);
         }
 
-        [Test]
+        [Fact]
         public void Map_WithAdditionInContextualization_ShouldMapAddition()
         {
             var linkedSource = new MyMediaLinkedSource
@@ -121,10 +119,10 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.SeekTimeInSec, Is.EqualTo(linkedSource.Contextualization.SeekTimeInSec));
+            Assert.Equal(linkedSource.Contextualization.SeekTimeInSec, actual.SeekTimeInSec);
         }
 
-        [Test]
+        [Fact]
         public void Map_WithNullContextualization_ShouldNotContextualizeValue()
         {
             var linkedSource = new MyMediaLinkedSource
@@ -139,11 +137,11 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.Title, Is.EqualTo(linkedSource.Model.Title));
+            Assert.Equal(linkedSource.Model.Title, actual.Title);
         }
 
 
-        [Test]
+        [Fact]
         public void Map_WithNestedContextualizedLinkedSource_ShouldContextualizeValue()
         {
             var linkedSource = new MyComplexLinkedSource
@@ -167,12 +165,12 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = _mapper.Map<MyComplexDto>(linkedSource);
 
-            Assert.That(actual.Media.Title, Is.EqualTo(linkedSource.Media.Contextualization.Title));
+            Assert.Equal(linkedSource.Media.Contextualization.Title, actual.Media.Title);
         }
 
 
 
-        [Test]
+        [Fact]
         public void Map_ValueTypeContextualizationWithDefault_ShouldUseDefault() {
             var linkedSource = new MyMediaLinkedSource {
                 Model = new MyMedia {
@@ -194,11 +192,11 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.VolumeLevel, Is.EqualTo(0));
-            Assert.That(actual.BassEq.Value, Is.EqualTo(5));
+            Assert.Equal(0, actual.VolumeLevel);
+            Assert.Equal(5, actual.BassEq.Value);
         }
 
-        [Test]
+        [Fact]
         public void Map_ValueTypeContextualizationWithOverrides_ShouldContextualize() {
             var linkedSource = new MyMediaLinkedSource {
                 Model = new MyMedia {
@@ -220,8 +218,8 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = _mapper.Map<MyMediaSummaryDto>(linkedSource);
 
-            Assert.That(actual.VolumeLevel, Is.EqualTo(1));
-            Assert.That(actual.BassEq, Is.EqualTo(2));
+            Assert.Equal(1, actual.VolumeLevel);
+            Assert.Equal(2, actual.BassEq);
         }
 
         public class MyMediaLinkedSource

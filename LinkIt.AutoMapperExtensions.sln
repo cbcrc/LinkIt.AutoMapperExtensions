@@ -1,36 +1,50 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F3230FC-9BF9-460E-ACD1-D17E30FC0B85}"
-	ProjectSection(SolutionItems) = preProject
-		LICENSE.txt = LICENSE.txt
-		logo.png = logo.png
-		README.md = README.md
-		slightly-more-complex-example.md = slightly-more-complex-example.md
-	EndProjectSection
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2003
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkIt.AutoMapperExtensions", "LinkIt.AutoMapperExtensions\LinkIt.AutoMapperExtensions.csproj", "{ABE995B4-BBF8-4069-AC22-9336B7E171A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkIt.AutoMapperExtensions", "LinkIt.AutoMapperExtensions\LinkIt.AutoMapperExtensions.csproj", "{AC76E33E-4FDA-4CB2-81E5-347DC7550C8F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkIt.AutoMapperExtensions.Tests", "LinkIt.AutoMapperExtensions.Tests\LinkIt.AutoMapperExtensions.Tests.csproj", "{9827C582-A814-4167-84BA-6E2DF6DFADBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkIt.AutoMapperExtensions.Tests", "LinkIt.AutoMapperExtensions.Tests\LinkIt.AutoMapperExtensions.Tests.csproj", "{DA3B8E15-2D03-4422-9562-CBA68476E7E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AC76E33E-4FDA-4CB2-81E5-347DC7550C8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC76E33E-4FDA-4CB2-81E5-347DC7550C8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC76E33E-4FDA-4CB2-81E5-347DC7550C8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC76E33E-4FDA-4CB2-81E5-347DC7550C8F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9827C582-A814-4167-84BA-6E2DF6DFADBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9827C582-A814-4167-84BA-6E2DF6DFADBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9827C582-A814-4167-84BA-6E2DF6DFADBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9827C582-A814-4167-84BA-6E2DF6DFADBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Debug|x64.Build.0 = Debug|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Debug|x86.Build.0 = Debug|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Release|x64.ActiveCfg = Release|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Release|x64.Build.0 = Release|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Release|x86.ActiveCfg = Release|Any CPU
+		{ABE995B4-BBF8-4069-AC22-9336B7E171A1}.Release|x86.Build.0 = Release|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Debug|x64.Build.0 = Debug|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Debug|x86.Build.0 = Debug|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Release|x64.ActiveCfg = Release|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Release|x64.Build.0 = Release|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Release|x86.ActiveCfg = Release|Any CPU
+		{DA3B8E15-2D03-4422-9562-CBA68476E7E8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {80EAEBC7-5DF1-4ABE-8B78-404FF257ED2A}
 	EndGlobalSection
 EndGlobal

@@ -4,49 +4,48 @@
 #endregion
 
 using System;
-using NUnit.Framework;
+using Xunit;
 
 namespace LinkIt.AutoMapperExtensions.Tests
 {
-    [TestFixture]
     public class OverrideConventionTests
     {
-        [Test]
+        [Fact]
         public void IsOverridden_WithNullabeT()
         {
             int? x = 1;
-            Assert.That(OverrideConvention.IsOverridden(x), Is.True);
+            Assert.True(OverrideConvention.IsOverridden(x));
             int? y = null;
-            Assert.That(OverrideConvention.IsOverridden(y), Is.False);
+            Assert.False(OverrideConvention.IsOverridden(y));
         }
 
-        [Test]
+        [Fact]
         public void IsOverridden_WithNullabeTAsObject() {
             int? x = 1;
-            Assert.That(OverrideConvention.IsOverridden((object)x), Is.True);
+            Assert.True(OverrideConvention.IsOverridden((object)x));
             int? y = null;
-            Assert.That(OverrideConvention.IsOverridden((object)y), Is.False);
+            Assert.False(OverrideConvention.IsOverridden((object)y));
         }
 
-        [Test]
+        [Fact]
         public void IsOverridden_WithObject() {
             Uri x = new Uri("http://google.com");
-            Assert.That(OverrideConvention.IsOverridden(x), Is.True);
+            Assert.True(OverrideConvention.IsOverridden(x));
             Uri y = null;
-            Assert.That(OverrideConvention.IsOverridden(y), Is.False);
+            Assert.False(OverrideConvention.IsOverridden(y));
         }
 
 
-        [Test]
+        [Fact]
         public void IsOverridden_WithStrings() {
             string x = "http://google.com";
-            Assert.That(OverrideConvention.IsOverridden(x), Is.True);
+            Assert.True(OverrideConvention.IsOverridden(x));
             string y = null;
-            Assert.That(OverrideConvention.IsOverridden(y), Is.False);
+            Assert.False(OverrideConvention.IsOverridden(y));
             string y1 = "";
-            Assert.That(OverrideConvention.IsOverridden(y1), Is.False);
+            Assert.False(OverrideConvention.IsOverridden(y1));
             string y2 = "  ";
-            Assert.That(OverrideConvention.IsOverridden(y2), Is.False);
+            Assert.False(OverrideConvention.IsOverridden(y2));
 
         }
 

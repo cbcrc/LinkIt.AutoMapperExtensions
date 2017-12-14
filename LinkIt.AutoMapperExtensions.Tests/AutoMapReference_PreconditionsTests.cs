@@ -5,14 +5,13 @@
 
 using System;
 using AutoMapper;
-using NUnit.Framework;
+using Xunit;
 
 namespace LinkIt.AutoMapperExtensions.Tests
 {
-    [TestFixture]
     public class AutoMapReference_PreconditionsTests 
     {
-        [Test]
+        [Fact]
         public void MapModel_WithoutModelProperty_ShouldThrowArgumentException()
         {
             Assert.Throws<ArgumentException>(() =>
@@ -25,7 +24,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
             });
         }
 
-        [Test]
+        [Fact]
         public void MapModel_WithPrimitiveModel_ShouldThrowArgumentException() {
             Assert.Throws<ArgumentException>(() =>
             {

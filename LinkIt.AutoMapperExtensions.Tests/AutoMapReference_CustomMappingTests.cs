@@ -4,14 +4,13 @@
 #endregion
 
 using AutoMapper;
-using NUnit.Framework;
+using Xunit;
 
 namespace LinkIt.AutoMapperExtensions.Tests
 {
-    [TestFixture]
     public class AutoMapReference_CustomMappingTests
     {
-        [Test]
+        [Fact]
         public void MapModel_WithCustomMappingForOtherProperty_ShouldMap()
         {
             var config = new MapperConfiguration(cfg =>
@@ -31,10 +30,10 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 
             var actual = mapper.Map<MyCustomDto>(source);
 
-            Assert.That(actual.SelfUrl, Is.EqualTo("http://blah.com/" + source.Model.Id));
+            Assert.Equal("http://blah.com/" + source.Model.Id, actual.SelfUrl);
         }
 
-        [Test]
+        [Fact]
         public void MapModel_WithCustomMappingForModelProperty_ShouldMap()
         {
             var config = new MapperConfiguration(cfg =>
@@ -55,7 +54,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = mapper.Map<MyCustomDto>(source);
 
-            Assert.That(actual.Title, Is.EqualTo(source.Model.Title + " TEST"));
+            Assert.Equal(source.Model.Title + " TEST", actual.Title);
         }
 
         private static MyCustomModel CreateMyCustomModel(int id)

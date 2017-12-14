@@ -4,18 +4,16 @@
 #endregion
 
 using AutoMapper;
-using NUnit.Framework;
+using Xunit;
 
 namespace LinkIt.AutoMapperExtensions.Tests
 {
-    [TestFixture]
     public class AutoMapReference_PolymorphismTests
     {
         private MapperConfiguration _config;
         private IMapper _mapper;
-
-        [SetUp]
-        public void SetUp()
+        
+        public AutoMapReference_PolymorphismTests()
         {
             _config = new MapperConfiguration(cfg =>
             {
@@ -35,14 +33,14 @@ namespace LinkIt.AutoMapperExtensions.Tests
             _mapper = _config.CreateMapper();
         }
 
-        [Test]
+        [Fact]
         public void AssertConfigurationIsValid()
         {
             _config.AssertConfigurationIsValid();
         }
 
 
-        [Test]
+        [Fact]
         public void Map_WithPolymorphicValueA_ShouldMapPolymorphicValueADto()
         {
             var source = new PolymorphicModel
@@ -57,12 +55,12 @@ namespace LinkIt.AutoMapperExtensions.Tests
             var actual = _mapper.Map<PolymorphicDto>(source);
 
             var asPolymorphicValueADto = actual.MyValue as PolymorphicValueADto;
-            Assert.That(asPolymorphicValueADto, Is.Not.Null);
-            Assert.That(asPolymorphicValueADto.X, Is.EqualTo("TheX"));
-            Assert.That(asPolymorphicValueADto.Y, Is.EqualTo("TheY"));
+            Assert.NotNull(asPolymorphicValueADto);
+            Assert.Equal("TheX", asPolymorphicValueADto.X);
+            Assert.Equal("TheY", asPolymorphicValueADto.Y);
         }
 
-        [Test]
+        [Fact]
         public void Map_WithPolymorphicValueB_ShouldMapPolymorphicValueBDto() {
             var source = new PolymorphicModel {
                 MyValue = new PolymorphicValueB {
@@ -74,12 +72,12 @@ namespace LinkIt.AutoMapperExtensions.Tests
             var actual = _mapper.Map<PolymorphicDto>(source);
 
             var asPolymorphicValueBDto = actual.MyValue as PolymorphicValueBDto;
-            Assert.That(asPolymorphicValueBDto, Is.Not.Null);
-            Assert.That(asPolymorphicValueBDto.Y, Is.EqualTo("TheY"));
-            Assert.That(asPolymorphicValueBDto.Z, Is.EqualTo("TheZ"));
+            Assert.NotNull(asPolymorphicValueBDto);
+            Assert.Equal("TheY", asPolymorphicValueBDto.Y);
+            Assert.Equal("TheZ", asPolymorphicValueBDto.Z);
         }
 
-        [Test]
+        [Fact]
         public void Map_WithCustomRules() {
             var source = new PolymorphicModel {
                 MyValue = new PolymorphicValueC {
@@ -90,8 +88,8 @@ namespace LinkIt.AutoMapperExtensions.Tests
             var actual = _mapper.Map<PolymorphicDto>(source);
 
             var asPolymorphicValueCDto = actual.MyValue as PolymorphicValueCDto;
-            Assert.That(asPolymorphicValueCDto, Is.Not.Null);
-            Assert.That(asPolymorphicValueCDto.Y, Is.EqualTo("TheY-custom"));
+            Assert.NotNull(asPolymorphicValueCDto);
+            Assert.Equal("TheY-custom", asPolymorphicValueCDto.Y);
         }
         
 
