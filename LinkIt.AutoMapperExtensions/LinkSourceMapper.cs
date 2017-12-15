@@ -1,6 +1,8 @@
 ﻿#region copyright
+
 // Copyright (c) CBC/Radio-Canada. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 #endregion
 
 using System;
@@ -11,96 +13,16 @@ using System.Reflection;
 using AutoMapper;
 
 namespace LinkIt.AutoMapperExtensions
-{
-    public class LinkSourceMapper<TLinkedSource, TDestination>
+{public class LinkSourceMapper<TLinkedSource, TDestination>
     {
         private const string ModelPropertyName = "Model";
         private const string ContextualizationPropertyName = "Contextualization";
+        private List<PropertyInfo> _contextualizationProperties;
+        private List<PropertyInfo> _destinationProperties;
 
-        #region Construction
-        public LinkSourceMapper() {
-            EnsureHasModelProperty();
-            EnsureHasModelPropertyWhichIsAClass();
-
-            PropertyNameComparer = new PropertyNameComparer();
-            InitModelProperties();
-            InitDestinationProperties();
-            InitReferenceProperties();
-            InitContextualizationProperties();
-        }
-
-        private void InitModelProperties() {
-            var linkedSourceType = typeof(TLinkedSource);
-            var modelType = linkedSourceType.GetProperty(ModelPropertyName).PropertyType;
-            ModelProperties = modelType.GetProperties().ToList();
-        }
-
-        private void InitDestinationProperties() {
-            var destinationType = typeof(TDestination);
-            DestinationProperties = destinationType.GetProperties().ToList();
-        }
-
-        private void InitReferenceProperties() {
-            var linkedSourceType = typeof(TLinkedSource);
-
-            ReferenceProperties = linkedSourceType.GetProperties()
-                .Where(property => property.Name != ModelPropertyName)
-                .Where(property => property.Name != ContextualizationPropertyName)
-                .ToList();
-        }
-
-        private void InitContextualizationProperties() {
-            var linkedSourceType = typeof(TLinkedSource);
-            var modelContextualization = linkedSourceType.GetProperty(ContextualizationPropertyName);
-            if (modelContextualization == null)
-            {
-                ContextualizationProperties = new List<PropertyInfo>();
-            }
-            else
-            {
-                var modelContextualizationType = modelContextualization.PropertyType;
-                ContextualizationProperties = modelContextualizationType.GetProperties()
-                    // By convention, we don't override the Id using the contextualization
-                    .Where(property => !property.Name.Equals("Id", StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-        }
-
-        private static void EnsureHasModelProperty() {
-            var linkedSourceType = typeof(TLinkedSource);
-            var linkedSourceTypeFullName = linkedSourceType.FullName;
-            if (linkedSourceType.GetProperty(ModelPropertyName) == null) {
-                throw new ArgumentException(
-                    string.Format(
-                        "{0} must have a property named Model, otherwise it cannot be used as a linked source.",
-                        linkedSourceTypeFullName
-                    ),
-                    "TLinkedSource"
-                );
-            }
-        }
-
-        private static void EnsureHasModelPropertyWhichIsAClass() {
-            var linkedSourceType = typeof(TLinkedSource);
-            var linkedSourceTypeFullName = linkedSourceType.FullName;
-            var modelType = linkedSourceType.GetProperty(ModelPropertyName).PropertyType;
-            if (modelType.IsClass == false) {
-                throw new ArgumentException(
-                    string.Format(
-                        "{0} must have a property named Model which is a class, otherwise it cannot be used as a linked source.",
-                        linkedSourceTypeFullName
-                    ),
-                    "TLinkedSource"
-                    );
-            }
-        }
-        #endregion
-
-        private List<PropertyInfo> ModelProperties { get; set; }
-        private List<PropertyInfo> DestinationProperties { get; set; }
-        private List<PropertyInfo> ReferenceProperties { get; set; }
-        private List<PropertyInfo> ContextualizationProperties { get; set; }
-        private PropertyNameComparer PropertyNameComparer { get; set; }
+        private List<PropertyInfo> _modelProperties;
+        private readonly PropertyNameComparer _propertyNameComparer;
+        private List<PropertyInfo> _referenceProperties;
 
         public IMappingExpression<TLinkedSource, TDestination> MapLinkedSource(IMappingExpression<TLinkedSource, TDestination> expression)
         {
@@ -113,38 +35,129 @@ namespace LinkIt.AutoMapperExtensions
 
         private void MapModelProperties(IMappingExpression<TLinkedSource, TDestination> expression)
         {
-            var modelPropertiesToMap = ModelProperties
-                .Intersect(DestinationProperties, PropertyNameComparer)
-                .Except(ReferenceProperties, PropertyNameComparer)
-                .Except(ContextualizationProperties, PropertyNameComparer);
+            var modelPropertiesToMap = _modelProperties
+                .Intersect(_destinationProperties, _propertyNameComparer)
+                .Except(_referenceProperties, _propertyNameComparer)
+                .Except(_contextualizationProperties, _propertyNameComparer);
 
             MapNestedProperties(ModelPropertyName, modelPropertiesToMap, expression);
         }
 
-        private void MapContextualizedModelProperties(IMappingExpression<TLinkedSource, TDestination> expression) {
-            var contextualizedModelPropertiesToMap = ModelProperties
-                .Intersect(DestinationProperties, PropertyNameComparer)
-                .Intersect(ContextualizationProperties, PropertyNameComparer)
-                .Except(ReferenceProperties, PropertyNameComparer);
+        private void MapContextualizedModelProperties(IMappingExpression<TLinkedSource, TDestination> expression)
+        {
+            var contextualizedModelPropertiesToMap = _modelProperties
+                .Intersect(_destinationProperties, _propertyNameComparer)
+                .Intersect(_contextualizationProperties, _propertyNameComparer)
+                .Except(_referenceProperties, _propertyNameComparer);
 
             MapContextualizedProperties(contextualizedModelPropertiesToMap, expression);
         }
 
-        private void MapPropertiesAddedInContextualization(IMappingExpression<TLinkedSource, TDestination> expression) {
-            var propertiesAddedInContextualization = ContextualizationProperties
-                .Intersect(DestinationProperties, PropertyNameComparer)
-                .Except(ReferenceProperties, PropertyNameComparer)
-                .Except(ModelProperties, PropertyNameComparer);
+        private void MapPropertiesAddedInContextualization(IMappingExpression<TLinkedSource, TDestination> expression)
+        {
+            var propertiesAddedInContextualization = _contextualizationProperties
+                .Intersect(_destinationProperties, _propertyNameComparer)
+                .Except(_referenceProperties, _propertyNameComparer)
+                .Except(_modelProperties, _propertyNameComparer);
 
             MapNestedProperties(ContextualizationPropertyName, propertiesAddedInContextualization, expression);
         }
 
+        #region Construction
+
+        public LinkSourceMapper()
+        {
+            EnsureHasModelProperty();
+            EnsureHasModelPropertyWhichIsAClass();
+
+            _propertyNameComparer = new PropertyNameComparer();
+            InitModelProperties();
+            InitDestinationProperties();
+            InitReferenceProperties();
+            InitContextualizationProperties();
+        }
+
+        private void InitModelProperties()
+        {
+            var linkedSourceType = typeof(TLinkedSource);
+            var modelType = linkedSourceType.GetProperty(ModelPropertyName).PropertyType;
+            _modelProperties = modelType.GetProperties().ToList();
+        }
+
+        private void InitDestinationProperties()
+        {
+            var destinationType = typeof(TDestination);
+            _destinationProperties = destinationType.GetProperties().ToList();
+        }
+
+        private void InitReferenceProperties()
+        {
+            var linkedSourceType = typeof(TLinkedSource);
+
+            _referenceProperties = linkedSourceType.GetProperties()
+                .Where(property => property.Name != ModelPropertyName)
+                .Where(property => property.Name != ContextualizationPropertyName)
+                .ToList();
+        }
+
+        private void InitContextualizationProperties()
+        {
+            var linkedSourceType = typeof(TLinkedSource);
+            var modelContextualization = linkedSourceType.GetProperty(ContextualizationPropertyName);
+            if (modelContextualization == null)
+            {
+                _contextualizationProperties = new List<PropertyInfo>();
+            }
+            else
+            {
+                var modelContextualizationType = modelContextualization.PropertyType;
+                _contextualizationProperties = modelContextualizationType.GetProperties()
+                    // By convention, we don't override the Id using the contextualization
+                    .Where(property => !property.Name.Equals("Id", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+        }
+
+        private static void EnsureHasModelProperty()
+        {
+            var linkedSourceType = typeof(TLinkedSource);
+            var linkedSourceTypeFullName = linkedSourceType.FullName;
+            if (linkedSourceType.GetProperty(ModelPropertyName) == null)
+                throw new ArgumentException(
+                    string.Format(
+                        "{0} must have a property named Model, otherwise it cannot be used as a linked source.",
+                        linkedSourceTypeFullName
+                    ),
+                    "TLinkedSource"
+                );
+        }
+
+        private static void EnsureHasModelPropertyWhichIsAClass()
+        {
+            var linkedSourceType = typeof(TLinkedSource);
+            var linkedSourceTypeFullName = linkedSourceType.FullName;
+            var modelType = linkedSourceType.GetProperty(ModelPropertyName).PropertyType;
+            if (modelType.IsClass == false)
+                throw new ArgumentException(
+                    string.Format(
+                        "{0} must have a property named Model which is a class, otherwise it cannot be used as a linked source.",
+                        linkedSourceTypeFullName
+                    ),
+                    "TLinkedSource"
+                );
+        }
+
+        #endregion
+
         #region MapNestedProperties
+
         private static void MapNestedProperties(
             string sourcePropertiesPrefix,
             IEnumerable<PropertyInfo> nestedProperties,
-            IMappingExpression<TLinkedSource, TDestination> expression) {
-            foreach (var property in nestedProperties) {
+            IMappingExpression<TLinkedSource, TDestination> expression)
+        {
+            foreach (var property in nestedProperties)
+            {
                 var sourcePropertyInDotNotation = string.Format("{0}.{1}", sourcePropertiesPrefix, property.Name);
                 var method = ThisType.GetMethod("MapProperty");
                 var genericMethod = method.MakeGenericMethod(property.PropertyType);
@@ -168,18 +181,23 @@ namespace LinkIt.AutoMapperExtensions
             expression.ForMember(destinationPropertyName, opt => opt.MapFrom(memberExpression));
         }
 
-        private static Expression<Func<TLinkedSource, TProperty>> CreateMemberExpression<TProperty>(string propertyInDotNotation) {
+        private static Expression<Func<TLinkedSource, TProperty>> CreateMemberExpression<TProperty>(string propertyInDotNotation)
+        {
             var root = Expression.Parameter(typeof(TLinkedSource), "root");
             var lambdaBody = GenerateGetProperty(root, propertyInDotNotation);
             return Expression.Lambda<Func<TLinkedSource, TProperty>>(lambdaBody, root);
         }
+
         #endregion
 
         #region MapContextualizedProperties
+
         private static void MapContextualizedProperties(
             IEnumerable<PropertyInfo> contextualizedProperties,
-            IMappingExpression<TLinkedSource, TDestination> expression) {
-            foreach (var property in contextualizedProperties) {
+            IMappingExpression<TLinkedSource, TDestination> expression)
+        {
+            foreach (var property in contextualizedProperties)
+            {
                 var overridingPropertyInDotNotation = string.Format("{0}.{1}", ContextualizationPropertyName, property.Name);
                 var defaultPropertyInDotNotation = string.Format("{0}.{1}", ModelPropertyName, property.Name);
 
@@ -199,12 +217,14 @@ namespace LinkIt.AutoMapperExtensions
             string overridingPropertyInDotNotation,
             string defaultPropertyInDotNotation,
             string destinationPropertyName,
-            IMappingExpression<TLinkedSource, TDestination> expression) {
+            IMappingExpression<TLinkedSource, TDestination> expression)
+        {
             var contextualizationFunc = CreateContextualizationFunc<TSourceProperty>(overridingPropertyInDotNotation, defaultPropertyInDotNotation);
             expression.ForMember(destinationPropertyName, opt => opt.ResolveUsing(contextualizationFunc));
         }
 
-        private static Func<TLinkedSource, TProperty> CreateContextualizationFunc<TProperty>(string overridingPropertyInDotNotation, string defaultPropertyInDotNotation) {
+        private static Func<TLinkedSource, TProperty> CreateContextualizationFunc<TProperty>(string overridingPropertyInDotNotation, string defaultPropertyInDotNotation)
+        {
             var root = Expression.Parameter(typeof(TLinkedSource), "root");
 
             var contextualizationProperty = GenerateGetProperty(root, ContextualizationPropertyName);
@@ -222,7 +242,7 @@ namespace LinkIt.AutoMapperExtensions
             var contextualize = Expression.Call(
                 ThisType,
                 contextualizeFuncName,
-                new[] {typeof (TProperty)},
+                new[] { typeof(TProperty) },
                 overridingProperty,
                 defaultProperty
             );
@@ -237,7 +257,7 @@ namespace LinkIt.AutoMapperExtensions
         {
             var tProperty = typeof(TProperty);
 
-            if (tProperty.IsValueType && !IsNullableType(tProperty)) { return "ContextualizeValueType"; }
+            if (tProperty.IsValueType && !IsNullableType(tProperty)) return "ContextualizeValueType";
             return "Contextualize";
         }
 
@@ -253,26 +273,26 @@ namespace LinkIt.AutoMapperExtensions
                 : defaultValue;
         }
 
-        public static T ContextualizeValueType<T>(T? overridingValue, T defaultValue) where T:struct
+        public static T ContextualizeValueType<T>(T? overridingValue, T defaultValue) where T : struct
         {
             return OverrideConvention.IsOverridden(overridingValue)
                 ? overridingValue.Value
                 : defaultValue;
         }
+
         #endregion
 
         #region Misc
-        private static Expression GenerateGetProperty(ParameterExpression root, string propertyInDotNotation) {
+
+        private static Expression GenerateGetProperty(ParameterExpression root, string propertyInDotNotation)
+        {
             Expression propertyExpression = root;
-            foreach (var property in propertyInDotNotation.Split('.')) {
-                propertyExpression = Expression.PropertyOrField(propertyExpression, property);
-            }
+            foreach (var property in propertyInDotNotation.Split('.')) propertyExpression = Expression.PropertyOrField(propertyExpression, property);
             return propertyExpression;
         }
 
-        private static Type ThisType {
-            get { return typeof(LinkSourceMapper<TLinkedSource, TDestination>); }
-        }
+        private static Type ThisType => typeof(LinkSourceMapper<TLinkedSource, TDestination>);
+
         #endregion
     }
 }

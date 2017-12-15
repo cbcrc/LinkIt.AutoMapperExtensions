@@ -27,7 +27,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
             {
                 Model = CreateMyCustomModel(1),
             };
-                
+
             var actual = mapper.Map<MyCustomDto>(source);
 
             Assert.Equal("http://blah.com/" + source.Model.Id, actual.SelfUrl);

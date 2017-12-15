@@ -14,6 +14,5 @@ namespace LinkIt.AutoMapperExtensions
             var mapper = new LinkSourceMapper<TLinkedSource, TDestination>();
             return mapper.MapLinkedSource(expression);
         }
-
     }
 }

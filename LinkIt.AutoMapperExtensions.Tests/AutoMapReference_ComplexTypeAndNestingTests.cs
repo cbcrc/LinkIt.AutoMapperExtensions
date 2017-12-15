@@ -10,9 +10,9 @@ namespace LinkIt.AutoMapperExtensions.Tests
 {
     public class AutoMapReference_ComplexTypeAndNestingTests
     {
-        private MapperConfiguration _config;
-        private IMapper _mapper;
-        
+        private readonly MapperConfiguration _config;
+        private readonly IMapper _mapper;
+
         public AutoMapReference_ComplexTypeAndNestingTests()
         {
             _config = new MapperConfiguration(cfg =>
@@ -39,7 +39,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 Model = CreateMyComplexModel(1, null),
                 Child = null
             };
-                
+
             var actual = _mapper.Map<MyComplexDto>(source);
 
             Assert.Equal(source.Model.Id, actual.Id);
@@ -91,7 +91,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                 new NestedLinkedSource {
                     Model = CreateMyComplexModel(2, null),
                     Child = null
-                }                
+                }
             };
 
             var actual = _mapper.Map<MyComplexDto[]>(source);
@@ -121,7 +121,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
                     new NestedLinkedSource {
                         Model = CreateMyComplexModel(2, null),
                         Child = null
-                    }              
+                    }
                 }
             };
 

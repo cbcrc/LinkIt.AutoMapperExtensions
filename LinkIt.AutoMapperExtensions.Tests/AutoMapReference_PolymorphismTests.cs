@@ -10,8 +10,8 @@ namespace LinkIt.AutoMapperExtensions.Tests
 {
     public class AutoMapReference_PolymorphismTests
     {
-        private MapperConfiguration _config;
-        private IMapper _mapper;
+        private readonly MapperConfiguration _config;
+        private readonly IMapper _mapper;
         
         public AutoMapReference_PolymorphismTests()
         {

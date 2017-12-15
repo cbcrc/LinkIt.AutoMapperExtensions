@@ -11,9 +11,9 @@ namespace LinkIt.AutoMapperExtensions.Tests
 {
     public class AutoMapReference_ContextualizationTests
     {
-        private MapperConfiguration _config;
-        private IMapper _mapper;
-        
+        private readonly MapperConfiguration _config;
+        private readonly IMapper _mapper;
+
         public AutoMapReference_ContextualizationTests()
         {
             _config = new MapperConfiguration(cfg =>
