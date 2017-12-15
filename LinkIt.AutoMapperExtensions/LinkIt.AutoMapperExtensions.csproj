@@ -2,17 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>LinkIt.AutoMapperExtensions</Title>
     <Version>2.1.0</Version>
     <Company>Radio-Canada/CBC</Company>
-    <Description>AutoMapper extensions to help map Linked Sources to DTOs by convention.</Description>
+    <Description>AutoMapper extensions to help map LinkIt Linked Sources to DTOs by convention.</Description>
     <Copyright>Copyright (c) 2017 CBC/Radio-Canada</Copyright>
     <PackageLicenseUrl>https://raw.githubusercontent.com/cbcrc/LinkIt.AutoMapperExtensions/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/cbcrc/LinkIt.AutoMapperExtensions</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/cbcrc/LinkIt.AutoMapperExtensions/master/icon.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/cbcrc/LinkIt.AutoMapperExtensions</RepositoryUrl>
     <PackageTags>c#, data, integration, database, mapper</PackageTags>
-    <Authors>Radio-Canada/CBC</Authors>
+    <Authors>Stéphane Leblanc, Laurent le Beau-Martin</Authors>
   </PropertyGroup>
 
   <ItemGroup>

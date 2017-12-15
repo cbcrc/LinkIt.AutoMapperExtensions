@@ -93,7 +93,7 @@ namespace LinkIt.AutoMapperExtensions
                     "TLinkedSource"
                     );
             }
-        } 
+        }
         #endregion
 
         private List<PropertyInfo> ModelProperties { get; set; }
@@ -159,9 +159,9 @@ namespace LinkIt.AutoMapperExtensions
         }
 
         public static void MapProperty<TSourceProperty>(
-            string sourcePropertyInDotNotation, 
+            string sourcePropertyInDotNotation,
             string destinationPropertyName,
-            IMappingExpression<TLinkedSource, TDestination> expression) 
+            IMappingExpression<TLinkedSource, TDestination> expression)
         {
             var memberExpression = CreateMemberExpression<TSourceProperty>(sourcePropertyInDotNotation);
 
@@ -172,7 +172,7 @@ namespace LinkIt.AutoMapperExtensions
             var root = Expression.Parameter(typeof(TLinkedSource), "root");
             var lambdaBody = GenerateGetProperty(root, propertyInDotNotation);
             return Expression.Lambda<Func<TLinkedSource, TProperty>>(lambdaBody, root);
-        } 
+        }
         #endregion
 
         #region MapContextualizedProperties
@@ -220,16 +220,16 @@ namespace LinkIt.AutoMapperExtensions
             var contextualizeFuncName = GetContextualizeFuncNameToCall<TProperty>();
 
             var contextualize = Expression.Call(
-                ThisType, 
-                contextualizeFuncName, 
+                ThisType,
+                contextualizeFuncName,
                 new[] {typeof (TProperty)},
-                overridingProperty, 
+                overridingProperty,
                 defaultProperty
             );
 
             // Create: root.Contextualization == null ? root.Model.Property : Contextualize(root.Contextualization.Property, root.Model.Property)
             var defaultOrContextualize = Expression.Condition(isContextualizationNull, defaultProperty, contextualize);
-            
+
             return Expression.Lambda<Func<TLinkedSource, TProperty>>(defaultOrContextualize, root).Compile();
         }
 
@@ -246,7 +246,7 @@ namespace LinkIt.AutoMapperExtensions
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
-        public static T Contextualize<T>(T overridingValue, T defaultValue)
+        public static T Contextualize<T>(T overridingValue, T defaultValue = default)
         {
             return OverrideConvention.IsOverridden(overridingValue)
                 ? overridingValue
