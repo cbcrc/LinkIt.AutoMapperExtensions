@@ -13,7 +13,8 @@ using System.Reflection;
 using AutoMapper;
 
 namespace LinkIt.AutoMapperExtensions
-{public class LinkSourceMapper<TLinkedSource, TDestination>
+{
+    public class LinkSourceMapper<TLinkedSource, TDestination>
     {
         private const string ModelPropertyName = "Model";
         private const string ContextualizationPropertyName = "Contextualization";
@@ -33,6 +34,39 @@ namespace LinkIt.AutoMapperExtensions
             return expression;
         }
 
+        public IMappingExpression<TLinkedSource, TDestination> MapNestedProperties(
+            IMappingExpression<TLinkedSource, TDestination> expression,
+            Expression<Func<TLinkedSource, object>> propertyExpression)
+        {
+            var me = propertyExpression.Body as MemberExpression;
+            // a voir si on throw une exception?
+            if (me == null) return expression;
+
+            var propertiesPrefix = GetPropertiesPrefix(me);
+            var nestedProperties = me.Type.GetProperties().ToList();
+
+            var modelPropertiesToMap = _destinationProperties
+                .Intersect(nestedProperties, _propertyNameComparer);
+
+            MapNestedProperties(propertiesPrefix, modelPropertiesToMap, expression);
+
+            return expression;
+        }
+
+        private static string GetPropertiesPrefix(MemberExpression me)
+        {
+            var propertiesPrefix = "";
+
+            while (me != null)
+            {
+                propertiesPrefix = string.IsNullOrEmpty(propertiesPrefix) ?
+                    me.Member.Name :
+                    $"{me.Member.Name}.{propertiesPrefix}";
+                me = me.Expression as MemberExpression;
+            }
+
+            return propertiesPrefix;
+        }
         private void MapModelProperties(IMappingExpression<TLinkedSource, TDestination> expression)
         {
             var modelPropertiesToMap = _modelProperties
