@@ -39,14 +39,18 @@ namespace LinkIt.AutoMapperExtensions
             Expression<Func<TLinkedSource, object>> propertyExpression)
         {
             var me = propertyExpression.Body as MemberExpression;
-            // a voir si on throw une exception?
-            if (me == null) return expression;
+            if (me == null)
+            {
+                throw new ArgumentException("Expression must be of type System.Linq.Expressions.MemberExpression", "propertyExpression");
+            }
 
             var propertiesPrefix = GetPropertiesPrefix(me);
             var nestedProperties = me.Type.GetProperties().ToList();
 
             var modelPropertiesToMap = _destinationProperties
-                .Intersect(nestedProperties, _propertyNameComparer);
+                .Intersect(nestedProperties, _propertyNameComparer)
+                .Except(_referenceProperties, _propertyNameComparer)
+                .Except(_contextualizationProperties, _propertyNameComparer);
 
             MapNestedProperties(propertiesPrefix, modelPropertiesToMap, expression);
 
