@@ -16,13 +16,13 @@ namespace LinkIt.AutoMapperExtensions
             var mapper = new LinkSourceMapper<TLinkedSource, TDestination>();
             return mapper.MapLinkedSource(expression);
         }
-        
-        public static IMappingExpression<TLinkedSource, TDestination> MapNestedProperties<TLinkedSource, TDestination>(
+
+        public static IMappingExpression<TLinkedSource, TDestination> MapLinkedSource<TLinkedSource, TDestination>(
             this IMappingExpression<TLinkedSource, TDestination> expression,
-            Expression<Func<TLinkedSource, object>> propertyExpression)
+            Expression<Func<TLinkedSource, object>> sourceProperty)
         {
-            var mapper = new LinkSourceMapper<TLinkedSource, TDestination>();
-            return mapper.MapNestedProperties(expression, propertyExpression);
+            var mapper = new LinkSourceMapper<TLinkedSource, TDestination>(sourceProperty);
+            return mapper.MapLinkedSource(expression);
         }
     }
 }

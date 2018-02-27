@@ -12,12 +12,12 @@ namespace LinkIt.AutoMapperExtensions.Tests
     {
         [Fact]
         public void MapModel_WithNestedPropertiesMappingForModelProperty_ShouldMap()
-        { 
+        {
             var config = new MapperConfiguration(cfg =>
             {
                 cfg
                     .CreateMap<MyNestedLinkedSource, MyNestedDto>()
-                    .MapNestedProperties(x => x.Model.Property);
+                    .MapLinkedSource(x => x.Model.Property);
             });
             config.AssertConfigurationIsValid();
             var mapper = config.CreateMapper();
@@ -25,6 +25,7 @@ namespace LinkIt.AutoMapperExtensions.Tests
             var source = new MyNestedLinkedSource
             {
                 Model = CreateMyNestedModel(1),
+                Point = new MyPoint { X = 1, Y = 2 }
             };
 
             var actual = mapper.Map<MyNestedDto>(source);
@@ -32,8 +33,10 @@ namespace LinkIt.AutoMapperExtensions.Tests
             Assert.Equal(100, actual.Number);
             Assert.Equal($"Title {actual.Number}", actual.Title);
             Assert.Equal($"Text {actual.Number}", actual.Text);
+            Assert.Equal(1, actual.Point.X);
+            Assert.Equal(2, actual.Point.Y);
         }
-        
+
         private static MyNestedModel CreateMyNestedModel(int id)
         {
             var propId = id * 100;
@@ -53,6 +56,12 @@ namespace LinkIt.AutoMapperExtensions.Tests
         public class MyNestedLinkedSource
         {
             public MyNestedModel Model { get; set; }
+            public MyPoint Point { get; set; }
+        }
+
+        public class MyPoint {
+            public float X { get; set; }
+            public float Y { get; set; }
         }
 
         public class MyNestedModel
@@ -74,6 +83,12 @@ namespace LinkIt.AutoMapperExtensions.Tests
             public string Title { get; set; }
             public int Number { get; set; }
             public string Text { get; set; }
+            public MyPointDto Point { get; set; }
+        }
+
+        public class MyPointDto {
+            public float X { get; set; }
+            public float Y { get; set; }
         }
     }
 }
