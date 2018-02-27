@@ -4,6 +4,8 @@
 #endregion
 
 using AutoMapper;
+using System;
+using System.Linq.Expressions;
 
 namespace LinkIt.AutoMapperExtensions
 {
@@ -12,6 +14,14 @@ namespace LinkIt.AutoMapperExtensions
         public static IMappingExpression<TLinkedSource, TDestination> MapLinkedSource<TLinkedSource, TDestination>(this IMappingExpression<TLinkedSource, TDestination> expression)
         {
             var mapper = new LinkSourceMapper<TLinkedSource, TDestination>();
+            return mapper.MapLinkedSource(expression);
+        }
+
+        public static IMappingExpression<TLinkedSource, TDestination> MapLinkedSource<TLinkedSource, TDestination>(
+            this IMappingExpression<TLinkedSource, TDestination> expression,
+            Expression<Func<TLinkedSource, object>> sourceProperty)
+        {
+            var mapper = new LinkSourceMapper<TLinkedSource, TDestination>(sourceProperty);
             return mapper.MapLinkedSource(expression);
         }
     }
