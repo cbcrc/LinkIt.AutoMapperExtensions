@@ -4,19 +4,21 @@
 #endregion
 
 using AutoMapper;
-using Xunit;
+using NUnit.Framework;
 
 namespace LinkIt.AutoMapperExtensions.Tests
 {
+    [TestFixture]
     public class AutoMapReference_NestedPropertyMappingTests
     {
-        [Fact]
+        [Test]
         public void MapModel_WithNestedPropertiesMappingForModelProperty_ShouldMap()
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg
-                    .CreateMap<MyNestedLinkedSource, MyNestedDto>()
+                cfg.CreateMap<MyPoint, MyPointDto>();
+
+                cfg.CreateMap<MyNestedLinkedSource, MyNestedDto>()
                     .MapLinkedSource(x => x.Model.Property);
             });
             config.AssertConfigurationIsValid();
@@ -30,11 +32,11 @@ namespace LinkIt.AutoMapperExtensions.Tests
 
             var actual = mapper.Map<MyNestedDto>(source);
 
-            Assert.Equal(100, actual.Number);
-            Assert.Equal($"Title {actual.Number}", actual.Title);
-            Assert.Equal($"Text {actual.Number}", actual.Text);
-            Assert.Equal(1, actual.Point.X);
-            Assert.Equal(2, actual.Point.Y);
+            Assert.AreEqual(100, actual.Number);
+            Assert.AreEqual($"Title {actual.Number}", actual.Title);
+            Assert.AreEqual($"Text {actual.Number}", actual.Text);
+            Assert.AreEqual(1, actual.Point.X);
+            Assert.AreEqual(2, actual.Point.Y);
         }
 
         private static MyNestedModel CreateMyNestedModel(int id)

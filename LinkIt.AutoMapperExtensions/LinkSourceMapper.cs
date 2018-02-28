@@ -44,10 +44,12 @@ namespace LinkIt.AutoMapperExtensions
 
         public LinkSourceMapper(Expression<Func<TLinkedSource, object>> sourceProperty)
         {
-            if (!(sourceProperty.Body is MemberExpression me))
+            if (!(sourceProperty.Body is MemberExpression))
             {
                 throw new ArgumentException("Expression must be of type System.Linq.Expressions.MemberExpression", "propertyExpression");
             }
+
+            var me = (MemberExpression) sourceProperty.Body;
 
             _sourcePropertyPath = GetPropertiesPrefix(me);
             _sourceProperties = me.Type.GetProperties().ToList();
@@ -283,7 +285,7 @@ namespace LinkIt.AutoMapperExtensions
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
-        public static T Contextualize<T>(T overridingValue, T defaultValue = default)
+        public static T Contextualize<T>(T overridingValue, T defaultValue = default(T))
         {
             return OverrideConvention.IsOverridden(overridingValue)
                 ? overridingValue
