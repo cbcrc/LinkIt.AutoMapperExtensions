@@ -15,7 +15,15 @@
     <RepositoryUrl>https://github.com/cbcrc/LinkIt.AutoMapperExtensions</RepositoryUrl>
     <PackageTags>c#, data, integration, database, mapper</PackageTags>
     <Authors>Stéphane Leblanc, Laurent le Beau-Martin</Authors>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.2" />
